@@ -14,12 +14,15 @@ import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellReference;
 
 public class WorkBook{
-	
-	public WorkBook(String workBookName, String sheetName) throws EncryptedDocumentException, IOException {
+	CellReference cellRefer;
+	Row cellRow;
+	Cell cell;
+	Workbook book;
+	public WorkBook(String bookName) throws EncryptedDocumentException, IOException {
 		Scanner scanning = new Scanner(System.in);
-		File workBooking = new File(workBookName);
-		Workbook workbook = WorkbookFactory.create(workBooking);
-		Sheet test = workbook.getSheet("sheet1");
+		File booking = new File(bookName);
+	    book = WorkbookFactory.create(booking);
+		Sheet test = book.getSheet("sheet1");
 		System.out.println("testing");
 		CellReference cellRef = new CellReference("A3");
 		Row row = test.getRow(cellRef.getRow());
@@ -31,4 +34,15 @@ public class WorkBook{
 		
 	}
 	
+	public String checkCell(String location, Sheet sheet) {
+		cellRefer = new CellReference(location);
+		cellRow = sheet.getRow(cellRefer.getRow());
+		cell = cellRow.getCell(cellRefer.getCol());
+			return cell.getStringCellValue();
+	
+	}
+	
+	public Sheet obtainSheet(String name) {
+		return book.getSheet(name);
+	}
 }
