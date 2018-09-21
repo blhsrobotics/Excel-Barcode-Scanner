@@ -28,10 +28,10 @@ public class ScannerLibrary {
 		WorkBook book = new WorkBook(fileLocation);
 		Sheet studentSheet = book.obtainSheet(sheetName);
 	    
-		while(!line.equals(null)) {
-			line = book.checkCell(location, studentSheet);
+	//	while(!line.equals(null)) {
+			//line = book.checkCell(location, studentSheet);
 			
-		}
+	//	}
 
 	
 	

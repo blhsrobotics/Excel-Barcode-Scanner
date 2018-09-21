@@ -9,9 +9,9 @@ import excel.WorkBook;
 public class Main {
 
 	public static void main(String[] args) throws EncryptedDocumentException, IOException {
-		String workbook = new String("C:\\Users\\Panther Robotics\\workspace\\Test#1\\A&qw.xls");
+		String workbook = new String("H:\\Eclipse\\Book1.xlsx");
 		String test = "sheet2";
-		WorkBook work = new WorkBook(workbook,test);
+		WorkBook work = new WorkBook(workbook);
 	}
 
 }

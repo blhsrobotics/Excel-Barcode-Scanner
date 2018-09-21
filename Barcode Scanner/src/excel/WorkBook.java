@@ -24,14 +24,13 @@ public class WorkBook{
 	    book = WorkbookFactory.create(booking);
 		Sheet test = book.getSheet("sheet1");
 		System.out.println("testing");
-		CellReference cellRef = new CellReference("A3");
+		CellReference cellRef = new CellReference("A2");
 		Row row = test.getRow(cellRef.getRow());
 		Cell cell = row.getCell(cellRef.getCol());
-		
-		CellAddress celling = new CellAddress("A3");
-		cell.setCellValue(scanning.nextLine());
+		cell.setCellValue("youYater");
+		CellAddress celling = new CellAddress("A2");
 		System.out.println("number is :" +cell.getStringCellValue());
-		
+		book.close();
 	}
 	
 	public String checkCell(String location, Sheet sheet) {
@@ -39,7 +38,6 @@ public class WorkBook{
 		cellRow = sheet.getRow(cellRefer.getRow());
 		cell = cellRow.getCell(cellRefer.getCol());
 			return cell.getStringCellValue();
-	
 	}
 	
 	public Sheet obtainSheet(String name) {
