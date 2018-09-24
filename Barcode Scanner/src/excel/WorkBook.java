@@ -55,8 +55,13 @@ public class WorkBook{
 
 	}
 	
+	public String checkCell(CellReference refer, Sheet sheet) {
+		cell = cellFinder(refer,sheet);
+			return cell.getStringCellValue();
+	}
+	
 	public String checkCell(String location, Sheet sheet) {
-		cell = cellFinder(location,sheet);
+		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 			return cell.getStringCellValue();
 	}
 	
@@ -67,7 +72,7 @@ public class WorkBook{
 	public void setCell(String location, Sheet sheet,String value) {
 	
 		
-		if((cell = cellFinder(location, sheet))==null) {
+		if((cell = cellFinder(cellRefFinder(location,sheet),sheet))==null) {
 		    currentRow = sheet.getRow(cellRefFinder(location,sheet).getRow());
 		   cell = currentRow.createCell(cellRefFinder(location,sheet).getCol());
 		    
@@ -77,24 +82,24 @@ public class WorkBook{
 	
 	public void setCell(String location, Sheet sheet, int value) {
 	
-		cell = cellFinder(location,sheet);
+		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
 
 	public void setCell(String location, Sheet sheet, double value) {
 	
-		cell = cellFinder(location,sheet);
+		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
 	
 	public void setCell(String location, Sheet sheet, boolean value) {
 		
-		cell = cellFinder(location,sheet);
+		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
 	
-	public static Cell cellFinder(String location, Sheet sheet) {
-		cellRefer = new CellReference(location);
+	public static Cell cellFinder(CellReference ref, Sheet sheet) {
+		cellRefer = ref;
 		cellRow = sheet.getRow(cellRefer.getRow());
 		
 		return (cellRow.getCell(cellRefer.getCol()));		
@@ -159,5 +164,22 @@ public class WorkBook{
 	
 	public CellRangeAddress findRangeAddress(String cellOne, String cellTwo, Sheet sheet) {
 		 return new CellRangeAddress(cellRefFinder(cellOne,sheet).getRow(), cellRefFinder(cellTwo,sheet).getRow(),cellRefFinder(cellOne,sheet).getCol(), cellRefFinder(cellTwo,sheet).getCol());
+	}
+	
+	public Cell findDataInRow(String data, Row row, Sheet sheet) {
+		cell = row.getCell(row.getFirstCellNum());
+		while(!(cell==null)) {
+			cell = cellFinder(new CellAddress(cell.getRowIndex(),cell.getColumnIndex()+1),sheet);
+				if((checkCell(new CellReference(cell), sheet))==data) 
+					return cell;
+			}
+		return null;
+	}
+
+	public static Cell cellFinder(CellAddress address, Sheet sheet) {
+		
+		cellRow = sheet.getRow(address.getRow());
+		
+		return (cellRow.getCell(address.getColumn()));		
 	}
 }

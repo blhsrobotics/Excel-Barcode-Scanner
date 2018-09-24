@@ -17,20 +17,20 @@ public class Main {
 
 	// REQUIRES ALL REFERENCED LIBRARIES. LIBRARIES DO NOT PUSH THROUGH GIT.
 	public static void main(String[] args) throws EncryptedDocumentException, IOException, InvalidFormatException {
-	/*	JFileChooser chooser = new JFileChooser(Desktop.getDesktop().toString());
-		 FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		File path = null;
+		JFileChooser chooser = new JFileChooser(Desktop.getDesktop().toString());
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 			       null, "xlsx");
-		 chooser.setFileFilter(filter);
-		 int returnVal = chooser.showOpenDialog(null);
-		 if (returnVal == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = chooser.getSelectedFile();
-				System.out.println(selectedFile.getAbsolutePath());
+		chooser.setFileFilter(filter);
+		int returnVal = chooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+				path = chooser.getSelectedFile();
+				System.out.println(path.getAbsolutePath());
 			}	
-		*/
-		System.out.println("User directory is: "+System. getProperty("user.dir"));
-		String workbook = new String("C:\\Users\\arlincha000\\Desktop\\StudentIDS.xlsx");
-		String test = "sheet2";
-		ScannerLibrary library = new ScannerLibrary(workbook);
+		
+		
+		
+		ScannerLibrary library = new ScannerLibrary(path);
 		
 	}
 }

@@ -30,16 +30,16 @@ public class ScannerLibrary {
 	static WorkBook book;
 	Sheet[] sheets;
 	Sheet primary;
-	public ScannerLibrary(String fileLocation) throws IOException {
+	public ScannerLibrary(File path) throws IOException {
 		 
-		 file = new File(fileLocation);
-	
+		 file = path;
+		 
 	try {
 		book = new WorkBook(file);
 		sheets = book.getSheets();
 		primary = book.getPrimarySheet(sheetName);
-		bufferedSetCell("C3", primary, "red");
-		book.removeMerger("B2", "D2", primary);
+		bufferedSetCell("C3", primary, "green");
+		book.setMerger("B2", "D2", primary);
 		System.out.println(book.checkCell("A2", primary));
 		book.closeBook();
 	} catch (EncryptedDocumentException | InvalidFormatException | IOException | NullPointerException e) {
