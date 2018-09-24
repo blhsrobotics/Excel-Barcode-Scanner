@@ -19,6 +19,7 @@ import org.apache.poi.ss.util.CellAddress;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 
 public class WorkBook{
 	static CellReference cellRefer;
@@ -36,8 +37,14 @@ public class WorkBook{
 		path = bookName;
 		System.out.println(path);
 		in = new FileInputStream(path);
-	    book = new XSSFWorkbook(in);
-		out = new FileOutputStream(path);
+	    
+		book = new XSSFWorkbook(in);
+		if(book==null) {
+			System.out.println("book path was null");
+			book = XSSFWorkbookFactory.createWorkbook(in);
+			System.out.println("created book");
+		}
+	    out = new FileOutputStream(path);
 		
 	}
 	

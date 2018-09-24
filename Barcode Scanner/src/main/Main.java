@@ -13,8 +13,10 @@ public class Main {
 
 	// REQUIRES ALL REFERENCED LIBRARIES. LIBRARIES DO NOT PUSH THROUGH GIT.
 	public static void main(String[] args) throws EncryptedDocumentException, IOException, InvalidFormatException {
-		String workbook = new String("C:\\Users\\PantherRobotics3218\\Desktop\\StudentIDS.xlsx");
+		System.out.println("User directory is: "+System. getProperty("user.dir"));
+		String workbook = new String("C:\\Users\\arlincha000\\Desktop\\StudentIDS.xlsx");
 		String test = "sheet2";
 		ScannerLibrary library = new ScannerLibrary(workbook);
+		
 	}
 }
