@@ -1,48 +1,154 @@
 package excel;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellAddress;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class WorkBook{
-	CellReference cellRefer;
-	Row cellRow;
+	static CellReference cellRefer;
+	static Row cellRow;
 	Cell cell;
-	Workbook book;
-	public WorkBook(String bookName) throws EncryptedDocumentException, IOException {
-		Scanner scanning = new Scanner(System.in);
-		File booking = new File(bookName);
-	    book = WorkbookFactory.create(booking);
-		Sheet test = book.getSheet("sheet1");
-		System.out.println("testing");
-		CellReference cellRef = new CellReference("A3");
-		Row row = test.getRow(cellRef.getRow());
-		Cell cell = row.getCell(cellRef.getCol());
+	XSSFWorkbook book;
+	FileInputStream in;
+	Scanner scanning = new Scanner(System.in);
+	FileOutputStream out;
+	File path;
+	Sheet[] sheets;
+	Row currentRow;
+	public WorkBook(File bookName) throws EncryptedDocumentException, IOException, InvalidFormatException {
+		path = bookName;
+		System.out.println(path);
+		in = new FileInputStream(path);
+	    book = new XSSFWorkbook(in);
+		out = new FileOutputStream(path);
 		
-		CellAddress celling = new CellAddress("A3");
-		cell.setCellValue(scanning.nextLine());
-		System.out.println("number is :" +cell.getStringCellValue());
+	}
+	
+	
+	
+	public void createRow() {
 		
 	}
 	
 	public String checkCell(String location, Sheet sheet) {
-		cellRefer = new CellReference(location);
-		cellRow = sheet.getRow(cellRefer.getRow());
-		cell = cellRow.getCell(cellRefer.getCol());
+		cell = cellFinder(location,sheet);
 			return cell.getStringCellValue();
-	
 	}
 	
 	public Sheet obtainSheet(String name) {
 		return book.getSheet(name);
+	}
+	
+	public void setCell(String location, Sheet sheet,String value) {
+	
+		
+		if((cell = cellFinder(location, sheet))==null) {
+		    currentRow = sheet.getRow(cellRefFinder(location,sheet).getRow());
+		   cell = currentRow.createCell(cellRefFinder(location,sheet).getCol());
+		    
+		}
+		cell.setCellValue(value);
+	}
+	
+	public void setCell(String location, Sheet sheet, int value) {
+	
+		cell = cellFinder(location,sheet);
+		cell.setCellValue(value);
+	}
+
+	public void setCell(String location, Sheet sheet, double value) {
+	
+		cell = cellFinder(location,sheet);
+		cell.setCellValue(value);
+	}
+	
+	public void setCell(String location, Sheet sheet, boolean value) {
+		
+		cell = cellFinder(location,sheet);
+		cell.setCellValue(value);
+	}
+	
+	public static Cell cellFinder(String location, Sheet sheet) {
+		cellRefer = new CellReference(location);
+		cellRow = sheet.getRow(cellRefer.getRow());
+		
+		return (cellRow.getCell(cellRefer.getCol()));		
+	}
+	
+	public void closeBook() throws IOException {
+		book.write(out);
+		out.flush();
+		out.close();
+		book.close();
+	}
+	
+	public Sheet[] getSheets() {
+		sheets = new Sheet[book.getNumberOfSheets()];
+		for(int x = 0; x<book.getNumberOfSheets();x++){
+			sheets[x] = book.getSheetAt(x);
+		}
+		return sheets;
+	}
+	
+	public Sheet getPrimarySheet(String sheetName) {
+		for(int x = 0; x<book.getNumberOfSheets();x++) {
+			if(book.getSheetName(x).equals(sheetName))
+			return book.getSheet(sheetName);
+		}
+		return null;
+	}
+	
+	public Row checkRowCreate(String location,Sheet sheet) {
+		cellRefer = cellRefFinder(location,sheet);
+		currentRow = sheet.getRow(cellRefer.getRow());
+		if(currentRow ==null) {
+			System.out.println("was null");
+			currentRow = sheet.createRow(cellRefer.getRow());
+			return currentRow;
+		}
+		return currentRow;
+	}
+	
+	public CellReference cellRefFinder(String location, Sheet sheet) {
+		return new CellReference(location);
+	}
+	
+	public void setMerger(String cellOne, String cellTwo, Sheet sheet) {
+		
+		
+		sheet.addMergedRegion(findRangeAddress(cellOne,cellTwo,sheet));
+		
+	}
+	
+	public void removeMerger(String cellOne, String cellTwo, Sheet sheet) {
+	for( int x = 0; x<sheet.getNumMergedRegions();x++) {
+		if((sheet.getMergedRegion(x).equals(findRangeAddress(cellOne,cellTwo,sheet)))){
+			sheet.removeMergedRegion(x);
+			System.out.println("Removed Region");
+			return;
+			}
+		}
+		System.out.println("Failed to find region to remove.");
+		return;
+	}
+	
+	public CellRangeAddress findRangeAddress(String cellOne, String cellTwo, Sheet sheet) {
+		 return new CellRangeAddress(cellRefFinder(cellOne,sheet).getRow(), cellRefFinder(cellTwo,sheet).getRow(),cellRefFinder(cellOne,sheet).getCol(), cellRefFinder(cellTwo,sheet).getCol());
 	}
 }
