@@ -1,10 +1,14 @@
 package scanning;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -27,9 +31,9 @@ public class ScannerLibrary {
 	Sheet[] sheets;
 	Sheet primary;
 	public ScannerLibrary(String fileLocation) throws IOException {
-		
-			file = new File(fileLocation);
-		
+		 
+		 file = new File(fileLocation);
+	
 	try {
 		book = new WorkBook(file);
 		sheets = book.getSheets();
