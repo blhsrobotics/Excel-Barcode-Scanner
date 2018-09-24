@@ -22,6 +22,7 @@ public class ScannerLibrary {
 	Scanner system = new Scanner(System.in);
 	String start = "A2";
 	String locationLetter=start.substring(0, 1);
+
 	static WorkBook book;
 	Sheet[] sheets;
 	Sheet primary;
@@ -45,6 +46,7 @@ public class ScannerLibrary {
 		// for some reason setCell for a string did not work. 
 		// possibly the row/cell has to be created. not sure.
 		// need to make rows, then use rows.createCell to fix it
+
 	}
 	
 	public void findStudent(int id, char column, int start) {

@@ -24,6 +24,7 @@ public class WorkBook{
 	static CellReference cellRefer;
 	static Row cellRow;
 	Cell cell;
+
 	XSSFWorkbook book;
 	FileInputStream in;
 	Scanner scanning = new Scanner(System.in);
@@ -44,6 +45,7 @@ public class WorkBook{
 	
 	public void createRow() {
 		
+
 	}
 	
 	public String checkCell(String location, Sheet sheet) {
