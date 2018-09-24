@@ -48,13 +48,6 @@ public class WorkBook{
 		
 	}
 	
-	
-	
-	public void createRow() {
-		
-
-	}
-	
 	public String checkCell(CellReference refer, Sheet sheet) {
 		cell = cellFinder(refer,sheet);
 			return cell.getStringCellValue();
@@ -103,6 +96,13 @@ public class WorkBook{
 		cellRow = sheet.getRow(cellRefer.getRow());
 		
 		return (cellRow.getCell(cellRefer.getCol()));		
+	}
+	
+	public static Cell cellFinder(CellAddress address, Sheet sheet) {
+		
+		cellRow = sheet.getRow(address.getRow());
+		
+		return (cellRow.getCell(address.getColumn()));		
 	}
 	
 	public void closeBook() throws IOException {
@@ -176,10 +176,5 @@ public class WorkBook{
 		return null;
 	}
 
-	public static Cell cellFinder(CellAddress address, Sheet sheet) {
-		
-		cellRow = sheet.getRow(address.getRow());
-		
-		return (cellRow.getCell(address.getColumn()));		
-	}
+	
 }

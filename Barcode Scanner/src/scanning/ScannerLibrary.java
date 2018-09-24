@@ -53,7 +53,7 @@ public class ScannerLibrary {
 
 	}
 	
-	public void findStudent(int id, char column, int start) {
+	public void findStudent(int id, int column, int start) {
 		
 	}
 	public static void bufferedSetCell(String location, Sheet sheet, Boolean value) {
