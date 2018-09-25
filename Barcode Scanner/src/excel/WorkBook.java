@@ -73,7 +73,6 @@ public class WorkBook{
 		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
-
 	
 	public void setCell(String location, Sheet sheet, double value) {
 	
