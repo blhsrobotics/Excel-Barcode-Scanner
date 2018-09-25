@@ -176,5 +176,9 @@ public class WorkBook{
 		return null;
 	}
 
+	public Row findRow(Cell cell) {
+		return cell.getRow();
+		
+	}
 	
 }

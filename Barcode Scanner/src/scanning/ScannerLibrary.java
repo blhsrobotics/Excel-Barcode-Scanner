@@ -12,6 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -53,7 +54,7 @@ public class ScannerLibrary {
 
 	}
 	
-	public void findStudent(int id, int column, int start) {
+	public void findStudent(int id, Sheet sheet) {
 		
 	}
 	public static void bufferedSetCell(String location, Sheet sheet, Boolean value) {
