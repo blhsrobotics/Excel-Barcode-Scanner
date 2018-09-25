@@ -64,13 +64,6 @@ public class WorkBook{
 	}
 	
 	public void setCell(String location, Sheet sheet,String value) {
-	
-		
-		if((cell = cellFinder(cellRefFinder(location,sheet),sheet))==null) {
-		    currentRow = sheet.getRow(cellRefFinder(location,sheet).getRow());
-		   cell = currentRow.createCell(cellRefFinder(location,sheet).getCol());
-		    
-		}
 		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
