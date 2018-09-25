@@ -128,11 +128,8 @@ public class WorkBook{
 		return null;
 	}
 	
-	public Row checkRowCreate(String location,Sheet sheet) {
 	public Row checkRowCellCreate(String location, Sheet sheet) {
 		cellRefer = cellRefFinder(location,sheet);
-		currentRow = sheet.getRow(cellRefer.getRow());
-		if(currentRow ==null) {
 		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
 			System.out.println("was null");
 			currentRow = sheet.createRow(cellRefer.getRow());
