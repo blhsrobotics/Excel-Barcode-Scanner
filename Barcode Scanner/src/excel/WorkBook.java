@@ -216,13 +216,11 @@ public class WorkBook{
 		setCell(location, sheet, value);
 		System.out.println("Set "+location+" to "+value);
 	}
-<<<<<<< HEAD
 
 	public Row findRow(Cell cell) {
 		return cell.getRow();
 		
 	}
-=======
->>>>>>> 0cb233451dbc236cde0313f3ff3f8a9eaea076f3
+
 	
 }

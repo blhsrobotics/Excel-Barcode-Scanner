@@ -48,12 +48,8 @@ public class ScannerLibrary {
 		// possibly the row/cell has to be created. not sure.
 		// need to make rows, then use rows.createCell to fix it
 	}
-<<<<<<< HEAD
 	
 	public void findStudent(int id, Sheet sheet) {
-=======
-	public void findStudent(int id, int column, int start) {
->>>>>>> 0cb233451dbc236cde0313f3ff3f8a9eaea076f3
 		
 	}
 	
