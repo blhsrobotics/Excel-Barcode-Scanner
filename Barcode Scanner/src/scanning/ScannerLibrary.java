@@ -24,23 +24,19 @@ public class ScannerLibrary {
 	String line = "not yet";
 	String sheetName = "Student IDs";
 	Scanner system = new Scanner(System.in);
-	String start = "A2";
-	String locationLetter=start.substring(0, 1);
-
 	static WorkBook book;
 	Sheet[] sheets;
 	Sheet primary;
 	public ScannerLibrary(File path) throws IOException {
-		 
 		 file = path;
-		 
 	try {
 		book = new WorkBook(file);
 		sheets = book.getSheets();
 		primary = book.getPrimarySheet(sheetName);
-		bufferedSetCell("C3", primary, "green");
-		book.setMerger("B2", "D2", primary);
-		System.out.println(book.checkCell("A2", primary));
+		book.bufferedSetCell("D2", primary, "test2");
+		//book.setMerger("B2", "D2", primary);
+		//System.out.println(book.checkCell("A2", primary));
+		System.out.println(book.checkCell("D3", primary));
 		book.closeBook();
 	} catch (EncryptedDocumentException | InvalidFormatException | IOException | NullPointerException e) {
 		book.closeBook();
@@ -50,30 +46,9 @@ public class ScannerLibrary {
 		// for some reason setCell for a string did not work. 
 		// possibly the row/cell has to be created. not sure.
 		// need to make rows, then use rows.createCell to fix it
-
 	}
-	
 	public void findStudent(int id, int column, int start) {
 		
 	}
-	public static void bufferedSetCell(String location, Sheet sheet, Boolean value) {
-		book.checkRowCreate(location, sheet);
-		book.setCell(location, sheet, value);
-	}
-	public static void bufferedSetCell(String location, Sheet sheet, int value) {
-		book.checkRowCreate(location, sheet);
-		book.setCell(location, sheet, value);
-	}
-	public static void bufferedSetCell(String location, Sheet sheet, double value) {
-		book.checkRowCreate(location, sheet);
-		book.setCell(location, sheet, value);
-	}
-	public static void bufferedSetCell(String location, Sheet sheet, String value) {
-		book.checkRowCreate(location, sheet);
-		book.setCell(location, sheet, value);
-	}
-	public static void bufferedSetCell(String location, Sheet sheet, char value) {
-		book.checkRowCreate(location, sheet);
-		book.setCell(location, sheet, value);
-	}
+	
 }

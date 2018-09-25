@@ -54,6 +54,7 @@ public class WorkBook{
 	}
 	
 	public String checkCell(String location, Sheet sheet) {
+		
 		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 			return cell.getStringCellValue();
 	}
@@ -63,13 +64,7 @@ public class WorkBook{
 	}
 	
 	public void setCell(String location, Sheet sheet,String value) {
-	
-		
-		if((cell = cellFinder(cellRefFinder(location,sheet),sheet))==null) {
-		    currentRow = sheet.getRow(cellRefFinder(location,sheet).getRow());
-		   cell = currentRow.createCell(cellRefFinder(location,sheet).getCol());
-		    
-		}
+		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
 	
@@ -78,7 +73,7 @@ public class WorkBook{
 		cell = cellFinder(cellRefFinder(location,sheet),sheet);
 		cell.setCellValue(value);
 	}
-
+	
 	public void setCell(String location, Sheet sheet, double value) {
 	
 		cell = cellFinder(cellRefFinder(location,sheet),sheet);
@@ -105,6 +100,11 @@ public class WorkBook{
 		return (cellRow.getCell(address.getColumn()));		
 	}
 	
+	public void saveBook() throws IOException {
+		book.write(out);
+		out.flush();
+	}
+	
 	public void closeBook() throws IOException {
 		book.write(out);
 		out.flush();
@@ -128,14 +128,27 @@ public class WorkBook{
 		return null;
 	}
 	
-	public Row checkRowCreate(String location,Sheet sheet) {
+	public Row checkRowCellCreate(String location, Sheet sheet) {
 		cellRefer = cellRefFinder(location,sheet);
-		currentRow = sheet.getRow(cellRefer.getRow());
-		if(currentRow ==null) {
+		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
 			System.out.println("was null");
 			currentRow = sheet.createRow(cellRefer.getRow());
+			currentRow.createCell(cellRefer.getCol());
 			return currentRow;
 		}
+		currentRow.createCell(cellRefer.getCol());	
+		return currentRow;
+	}
+	
+	public Row checkRowCellCreate(CellReference refer, Sheet sheet) {
+			cellRefer = refer;
+		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
+			System.out.println("was null");
+			currentRow = sheet.createRow(cellRefer.getRow());
+			currentRow.createCell(cellRefer.getCol());
+			return currentRow;
+		}
+		currentRow.createCell(cellRefer.getCol());	
 		return currentRow;
 	}
 	
@@ -174,7 +187,34 @@ public class WorkBook{
 					return cell;
 			}
 		return null;
+		
 	}
-
+	
+	public void bufferedSetCell(String location, Sheet sheet, Boolean value) {
+		checkRowCellCreate(location, sheet);
+		setCell(location, sheet, value);
+		System.out.println("Set "+location+" to "+value);
+	}
+	public void bufferedSetCell(String location, Sheet sheet, int value) {
+		checkRowCellCreate(location, sheet);
+		setCell(location, sheet, value);
+		System.out.println("Set "+location+" to "+value);
+	}
+	public void bufferedSetCell(String location, Sheet sheet, double value) {
+		checkRowCellCreate(location, sheet);
+		setCell(location, sheet, value);
+		System.out.println("Set "+location+" to "+value);
+	}
+	public void bufferedSetCell(String location, Sheet sheet, String value) {
+		
+		checkRowCellCreate(location, sheet);
+		setCell(location, sheet, value);
+		System.out.println("Set "+location+" to "+value);
+	}
+	public void bufferedSetCell(String location, Sheet sheet, char value) {
+		checkRowCellCreate(location, sheet);
+		setCell(location, sheet, value);
+		System.out.println("Set "+location+" to "+value);
+	}
 	
 }
