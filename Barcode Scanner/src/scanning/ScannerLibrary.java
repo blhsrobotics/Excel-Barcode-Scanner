@@ -12,15 +12,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import excel.WorkBook;
 
 public class ScannerLibrary {
 	int amountOfStudents;
-	Map<Integer, Integer> studentNumberMap = new HashMap<>();
+	static Map<Integer, Integer> studentNumberMap = new HashMap<>();
 	File file;
 	String line = "not yet";
 	String sheetName = "Student IDs";
@@ -28,29 +30,29 @@ public class ScannerLibrary {
 	static WorkBook book;
 	Sheet[] sheets;
 	Sheet primary;
-	public ScannerLibrary(File path) throws IOException {
-		 file = path;
-	try {
+	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
+	
+		file = path;
 		book = new WorkBook(file);
+		System.out.println("made book");
+		int yes = book.returnCellValue(int.class);
+		System.out.println(yes);
+		System.out.println("printed out yes");
 		sheets = book.getSheets();
 		primary = book.getPrimarySheet(sheetName);
-		book.bufferedSetCell("D2", primary, "test2");
-		//book.setMerger("B2", "D2", primary);
-		//System.out.println(book.checkCell("A2", primary));
-		System.out.println(book.checkCell("D3", primary));
+		book.bufferedSetCell("D2", primary, "yes");
+		System.out.println(book.checkCell(new CellReference("D2"), primary));
 		book.closeBook();
-	} catch (EncryptedDocumentException | InvalidFormatException | IOException | NullPointerException e) {
-		book.closeBook();
-		e.printStackTrace();
-		}
-		// Rename sheet name on master workbook to sheetName-
-		// for some reason setCell for a string did not work. 
-		// possibly the row/cell has to be created. not sure.
-		// need to make rows, then use rows.createCell to fix it
 	}
 	
 	public void findStudent(int id, Sheet sheet) {
 		
 	}
 	
+	public static void createList(int columnOne,int columnTwo, Sheet sheet) {
+		for(int x= 0; x<studentNumberMap.size();x++) {
+		//	studentNumberMap.put(book.checkCell(new CellReference(x,columnOne), sheet),book.checkCell(new CellReference(x,columnTwo), sheet));
+		}
+	
+	}
 }
