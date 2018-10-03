@@ -22,7 +22,7 @@ import excel.WorkBook;
 
 public class ScannerLibrary {
 	int amountOfStudents;
-	static Map<Integer, Integer> studentNumberMap = new HashMap<>();
+	static Map<Double,String> studentNumberMap = new HashMap<>();
 	File file;
 	String line = "not yet";
 	String sheetName = "Student IDs";
@@ -30,19 +30,29 @@ public class ScannerLibrary {
 	static WorkBook book;
 	Sheet[] sheets;
 	Sheet primary;
+	final String[] markers = new String[] {
+			"ID'S","NAMES",};
+	static Cell studentID;
+	static Cell studentName;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
 	
 		file = path;
 		book = new WorkBook(file);
 		System.out.println("made book");
-		int yes = book.returnCellValue(int.class);
-		System.out.println(yes);
-		System.out.println("printed out yes");
+		
 		sheets = book.getSheets();
 		primary = book.getPrimarySheet(sheetName);
-		book.bufferedSetCell("D2", primary, "yes");
-		System.out.println(book.checkCell(new CellReference("D2"), primary));
-		book.closeBook();
+	    studentID = book.findDataInRow("Student IDs", 1, primary,50);
+	    studentName = book.findDataInRow("Student Names", 1, primary,50);
+	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
+	    System.out.println("StudentID Column is: " +studentID.getAddress());
+	    System.out.println("StudentName Column is: " +studentName.getAddress());
+	    addStudent(988837,"chase",primary);
+	    addStudent(983759,"Sidnee",primary);
+	    
+	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
+	    
+	    book.closeBook();
 	}
 	
 	public void findStudent(int id, Sheet sheet) {
@@ -50,9 +60,36 @@ public class ScannerLibrary {
 	}
 	
 	public static void createList(int columnOne,int columnTwo, Sheet sheet) {
-		for(int x= 0; x<studentNumberMap.size();x++) {
-		//	studentNumberMap.put(book.checkCell(new CellReference(x,columnOne), sheet),book.checkCell(new CellReference(x,columnTwo), sheet));
+		studentNumberMap.clear();
+		try {
+			int x= 1;
+		
+			while(true) {
+				System.out.println(book.checkCellNumeric(new CellReference(x,columnOne), sheet) +", " + book.checkCellString(new CellReference(x,columnTwo), sheet));
+				studentNumberMap.put(book.checkCellNumeric(new CellReference(x,columnOne), sheet), book.checkCellString(new CellReference(x,columnTwo), sheet));
+				x++;
+			}
 		}
-	
+		catch(NullPointerException e) {
+		System.out.println("Error: "
+				+ "Likely ran out of numbers in the StudentID/StudentName columns");
+		
+		}
+	}
+
+	public static void addStudent(double barcode, String name, Sheet sheet) {
+		int x = 1;
+		try{
+			while(true) {
+		
+			book.checkCellNumeric(new CellReference(x,studentID.getColumnIndex()), sheet);
+			x++;
+			}
+		}
+		catch(NullPointerException e) {
+			book.bufferedSetCell(new CellReference(x,studentID.getColumnIndex()), sheet, barcode);
+			book.bufferedSetCell(new CellReference(x,studentName.getColumnIndex()), sheet, name);
+			createList(studentID.getColumnIndex(),studentName.getColumnIndex(), sheet);
+		}
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Scanner;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
@@ -48,70 +49,66 @@ public class WorkBook{
 	    out = new FileOutputStream(path);
 		
 		
-		}
-	public <Returning> Returning returnCellValue(Class<Returning>ty) {
-		System.out.println(super.getClass());
-		String yes = "56";
-		return (Returning)(yes);
-		
 	}
 	
-	public Object checkCell(CellReference refer, Sheet sheet) {
-		
+	public String checkCellString(CellReference refer, Sheet sheet) {
 		cell = cellFinder(refer,sheet);
-			
-		
 		return cell.getStringCellValue();
 	}
-	public Object checkCell(String location, Sheet sheet ) {
-		
-		cell = cellFinder(cellRefFinder(location,sheet),sheet);
-			return cell.getStringCellValue();
+	
+	public double checkCellNumeric(CellReference refer, Sheet sheet) {
+		cell = cellFinder(refer,sheet);
+		return cell.getNumericCellValue();
 	}
+	
+	public boolean checkCellBoolean(CellReference refer, Sheet sheet) {
+	cell = cellFinder(refer,sheet);
+	return cell.getBooleanCellValue();
+	}
+	
 	public Sheet obtainSheet(String name) {
 		return book.getSheet(name);
 	}
-	public void setCell(String location, Sheet sheet,String value) {
-		cell = cellFinder(cellRefFinder(location,sheet),sheet);
-		cell.setCellValue(value);
-	}
-	public void setCell(String location, Sheet sheet, int value) {
 	
-		cell = cellFinder(cellRefFinder(location,sheet),sheet);
+	public void setCell(CellReference refer, Sheet sheet,String value) {
+		cell = cellFinder(refer,sheet);
 		cell.setCellValue(value);
-	}
-	public void setCell(String location, Sheet sheet, double value) {
-	
-		cell = cellFinder(cellRefFinder(location,sheet),sheet);
-		cell.setCellValue(value);
-	}
-	public void setCell(String location, Sheet sheet, boolean value) {
 		
-		cell = cellFinder(cellRefFinder(location,sheet),sheet);
+	}
+	
+	public void setCell(CellReference refer, Sheet sheet, int value) {
+		cell = cellFinder(refer,sheet);
 		cell.setCellValue(value);
 	}
+
+	public void setCell(CellReference refer, Sheet sheet, double value) {
+		cell = cellFinder(refer,sheet);
+		cell.setCellValue(value);
+	}
+	
+	public void setCell(CellReference refer, Sheet sheet, boolean value) {
+		cell = cellFinder(refer,sheet);
+		cell.setCellValue(value);
+	}
+	
 	public static Cell cellFinder(CellReference ref, Sheet sheet) {
 		cellRefer = ref;
 		cellRow = sheet.getRow(cellRefer.getRow());
-		
 		return (cellRow.getCell(cellRefer.getCol()));		
 	}
-	public static Cell cellFinder(CellAddress address, Sheet sheet) {
-		
-		cellRow = sheet.getRow(address.getRow());
-		
-		return (cellRow.getCell(address.getColumn()));		
-	}
+
 	public void saveBook() throws IOException {
 		book.write(out);
 		out.flush();
 	}
+
 	public void closeBook() throws IOException {
 		book.write(out);
 		out.flush();
 		out.close();
 		book.close();
 	}
+
 	public Sheet[] getSheets() {
 		sheets = new Sheet[book.getNumberOfSheets()];
 		for(int x = 0; x<book.getNumberOfSheets();x++){
@@ -119,6 +116,7 @@ public class WorkBook{
 		}
 		return sheets;
 	}
+	
 	public Sheet getPrimarySheet(String sheetName) {
 		for(int x = 0; x<book.getNumberOfSheets();x++) {
 			if(book.getSheetName(x).equals(sheetName))
@@ -126,94 +124,128 @@ public class WorkBook{
 		}
 		return null;
 	}
-	public Row checkRowCellCreate(String location, Sheet sheet) {
-		cellRefer = cellRefFinder(location,sheet);
+	
+	
+	public Cell checkRowCellCreate(CellReference refer, Sheet sheet) {
+		cellRefer = refer;
+		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
+			System.out.println("was null at: "+refer.formatAsString());
+			currentRow = sheet.createRow(cellRefer.getRow());
+			 cell = currentRow.createCell(cellRefer.getCol());
+			 
+			 return cell;
+		}
+		
+		if((cell = currentRow.getCell(cellRefer.getCol()))==null) {
+			cell = currentRow.createCell(cellRefer.getCol());	
+			return cell;
+		}
+		
+		cell = currentRow.getCell(cellRefer.getCol());
+		return cell;
+	}
+	
+	public Row checkRowCreate(CellReference refer, Sheet sheet) {
+		cellRefer = refer;
 		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
 			System.out.println("was null");
 			currentRow = sheet.createRow(cellRefer.getRow());
-			currentRow.createCell(cellRefer.getCol());
 			return currentRow;
-		}
-		currentRow.createCell(cellRefer.getCol());	
+		}	
 		return currentRow;
 	}
-	public Row checkRowCellCreate(CellReference refer, Sheet sheet) {
-			cellRefer = refer;
-		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
-			System.out.println("was null");
-			currentRow = sheet.createRow(cellRefer.getRow());
-			currentRow.createCell(cellRefer.getCol());
-			return currentRow;
-		}
-		currentRow.createCell(cellRefer.getCol());	
-		return currentRow;
+	
+	public CellReference cellRefFinder(String location) {
+		CellReference refer = new CellReference(location);
+		return refer;
 	}
-	public CellReference cellRefFinder(String location, Sheet sheet) {
-		return new CellReference(location);
-	}
-	public void setMerger(String cellOne, String cellTwo, Sheet sheet) {
-		
-		
+	
+	public void setMerger(CellReference cellOne, CellReference cellTwo, Sheet sheet) {
 		sheet.addMergedRegion(findRangeAddress(cellOne,cellTwo,sheet));
-		
 	}
-	public void removeMerger(String cellOne, String cellTwo, Sheet sheet) {
-	for( int x = 0; x<sheet.getNumMergedRegions();x++) {
-		if((sheet.getMergedRegion(x).equals(findRangeAddress(cellOne,cellTwo,sheet)))){
-			sheet.removeMergedRegion(x);
-			System.out.println("Removed Region");
-			return;
-			}
+	
+	public void removeMerger(CellReference cellOne, CellReference cellTwo, Sheet sheet) {
+		for( int x = 0; x<sheet.getNumMergedRegions();x++) {
+			if((sheet.getMergedRegion(x).equals(findRangeAddress(cellOne,cellTwo,sheet)))){
+				sheet.removeMergedRegion(x);
+				System.out.println("Removed Region");
+				return;
+				}
 		}
 		System.out.println("Failed to find region to remove.");
 		return;
 	}
-	public CellRangeAddress findRangeAddress(String cellOne, String cellTwo, Sheet sheet) {
-		 return new CellRangeAddress(cellRefFinder(cellOne,sheet).getRow(), cellRefFinder(cellTwo,sheet).getRow(),cellRefFinder(cellOne,sheet).getCol(), cellRefFinder(cellTwo,sheet).getCol());
+	
+	public CellRangeAddress findRangeAddress(CellReference referOne, CellReference referTwo, Sheet sheet) {
+		 return new CellRangeAddress(referOne.getRow(), referTwo.getRow(),referOne.getCol(), referTwo.getCol());
 	}
-	public Cell findDataInRow(String data, Row row, Sheet sheet) {
+	
+	public Cell findDataInRow(String data, int rowNum, Sheet sheet,int search) {
+		Row row = findRow(rowNum,sheet);
 		cell = row.getCell(row.getFirstCellNum());
-		while(!(cell==null)) {
-			cell = cellFinder(new CellAddress(cell.getRowIndex(),cell.getColumnIndex()+1),sheet);
-				if((checkCell(new CellReference(cell), sheet))==data) 
-					return cell;
+		
+		int x = 0;
+		while(x<=search) {
+			cell = cellFinder(new CellReference(row.getRowNum(),x),sheet);
+			if(!(cell==null)) {
+			if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
+				return cell;
 			}
-		
-		return null;
-		
+			
+			}
+			x++;
+		}
+			return null;
 	}
-	public void bufferedSetCell(String location, Sheet sheet, Boolean value) {
-		checkRowCellCreate(location, sheet);
-		setCell(location, sheet, value);
-		System.out.println("Set "+location+" to "+value);
+	
+	public Cell findDataInColumn(String data, int columnNum, Sheet sheet, int search) {
+		cell = checkRowCellCreate(new CellReference(0,columnNum-1),sheet);
+		int x = 0;
+		while(x<=search) {
+			cell = checkRowCellCreate(new CellReference(x,columnNum-1),sheet);
+			if(!(cell==null)) {
+				if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
+				return cell;
+				}
+			}
+			x++;
+		}
+			return null;
 	}
-	public void bufferedSetCell(String location, Sheet sheet, int value) {
-		checkRowCellCreate(location, sheet);
-		setCell(location, sheet, value);
-		System.out.println("Set "+location+" to "+value);
-	}
-	public void bufferedSetCell(String location, Sheet sheet, double value) {
-		checkRowCellCreate(location, sheet);
-		setCell(location, sheet, value);
-		System.out.println("Set "+location+" to "+value);
-	}
-	public void bufferedSetCell(String location, Sheet sheet, String value) {
-		
-		checkRowCellCreate(location, sheet);
-		setCell(location, sheet, value);
-		System.out.println("Set "+location+" to "+value);
-	}
-	public void bufferedSetCell(String location, Sheet sheet, char value) {
-		checkRowCellCreate(location, sheet);
-		setCell(location, sheet, value);
-		System.out.println("Set "+location+" to "+value);
-	}
-	public Row findRow(Cell cell) {
-		return cell.getRow();
+	
+	public void bufferedSetCell(CellReference refer, Sheet sheet, Boolean value) {
+		checkRowCellCreate(refer, sheet);
+		setCell(refer, sheet, value);
 		
 	}
-	public enum type {
-		CELLREF;
+	
+	public void bufferedSetCell(CellReference refer, Sheet sheet, int value) {
+		checkRowCellCreate(refer, sheet);
+		setCell(refer, sheet, value);
 		
+	}
+	
+	public void bufferedSetCell(CellReference refer, Sheet sheet, double value) {
+		checkRowCellCreate(refer, sheet);
+		setCell(refer, sheet, value);
+		
+	}
+	
+	public void bufferedSetCell(CellReference refer, Sheet sheet, String value) {
+		checkRowCellCreate(refer, sheet);
+		setCell(refer, sheet, value);
+		
+	}
+	
+	public void bufferedSetCell(CellReference refer, Sheet sheet, char value) {
+		checkRowCellCreate(refer, sheet);
+		setCell(refer, sheet, value);
+		
+	}
+	
+	public Row findRow(int row, Sheet sheet) {
+		cellRefer =new CellReference(row-1,0);
+		
+		return checkRowCreate(cellRefer,sheet);
 	}
 }
