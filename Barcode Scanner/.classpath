@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="src/lib/poi-ooxml-schemas-4.0.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/poi-scratchpad-4.0.0.jar"/>
 	<classpathentry kind="lib" path="src/lib/xmlbeans-3.0.1.jar"/>
+	<classpathentry kind="lib" path="src/lib/miglayout-4.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
