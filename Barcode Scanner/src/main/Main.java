@@ -12,7 +12,6 @@ import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import excel.WorkBook;
-import gui.GUI;
 import scanning.ScannerLibrary;
 
 public class Main {
@@ -31,7 +30,6 @@ public class Main {
 			}	
 		
 		
-		GUI gui = new GUI();
 		ScannerLibrary library = new ScannerLibrary(path);
 		
 	}
