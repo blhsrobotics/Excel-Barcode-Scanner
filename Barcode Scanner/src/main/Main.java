@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.poi.EncryptedDocumentException;
@@ -17,7 +18,7 @@ import scanning.ScannerLibrary;
 public class Main {
 
 	// REQUIRES ALL REFERENCED LIBRARIES. LIBRARIES DO NOT PUSH THROUGH GIT.
-	public static void main(String[] args) throws EncryptedDocumentException, IOException, InvalidFormatException {
+	public static void main(String[] args) throws EncryptedDocumentException, IOException, InvalidFormatException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		File path = null;
 		JFileChooser chooser = new JFileChooser(Desktop.getDesktop().toString());
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
