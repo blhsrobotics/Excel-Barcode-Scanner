@@ -12,7 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.formula.functions.Column;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -34,6 +36,8 @@ public class WorkBook{
 	File path;
 	Sheet[] sheets;
 	Row currentRow;
+	CellStyle cellStyle;
+
 	public WorkBook(File bookName) throws EncryptedDocumentException, IOException, InvalidFormatException {
 		
 		path = bookName;
@@ -47,7 +51,8 @@ public class WorkBook{
 			System.out.println("created book");
 		}
 	    out = new FileOutputStream(path);
-		
+	    cellStyle = book.createCellStyle();
+	    cellStyle.setAlignment(HorizontalAlignment.CENTER);
 		
 	}
 	
@@ -72,29 +77,39 @@ public class WorkBook{
 	
 	public void setCell(CellReference refer, Sheet sheet,String value) {
 		cell = cellFinder(refer,sheet);
+			    cell.setCellStyle(cellStyle);
 		cell.setCellValue(value);
 		
 	}
 	
 	public void setCell(CellReference refer, Sheet sheet, int value) {
 		cell = cellFinder(refer,sheet);
-		cell.setCellValue(value);
+	    cell.setCellStyle(cellStyle);
+	    cell.setCellValue(value);
 	}
 
 	public void setCell(CellReference refer, Sheet sheet, double value) {
 		cell = cellFinder(refer,sheet);
-		cell.setCellValue(value);
+	    cell.setCellStyle(cellStyle);
+	    cell.setCellValue(value);
 	}
 	
 	public void setCell(CellReference refer, Sheet sheet, boolean value) {
 		cell = cellFinder(refer,sheet);
-		cell.setCellValue(value);
+	    cell.setCellStyle(cellStyle);
+	    cell.setCellValue(value);
 	}
 	
 	public static Cell cellFinder(CellReference ref, Sheet sheet) {
 		cellRefer = ref;
 		cellRow = sheet.getRow(cellRefer.getRow());
-		return (cellRow.getCell(cellRefer.getCol()));		
+		try{
+			return (cellRow.getCell(cellRefer.getCol()));		
+		}
+	catch(NullPointerException e) {
+		System.out.println("Cell doesn't exist");
+	}
+		return null;
 	}
 
 	public void saveBook() throws IOException {
@@ -161,7 +176,13 @@ public class WorkBook{
 	}
 	
 	public void setMerger(CellReference cellOne, CellReference cellTwo, Sheet sheet) {
-		sheet.addMergedRegion(findRangeAddress(cellOne,cellTwo,sheet));
+		try {
+			sheet.addMergedRegion(findRangeAddress(cellOne,cellTwo,sheet));
+	
+	}
+		catch(IllegalStateException e) {
+		System.out.println("Couldn't merge regions");
+		}
 	}
 	
 	public void removeMerger(CellReference cellOne, CellReference cellTwo, Sheet sheet) {
@@ -216,36 +237,34 @@ public class WorkBook{
 	public void bufferedSetCell(CellReference refer, Sheet sheet, Boolean value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-		
 	}
 	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, int value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-		
 	}
 	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, double value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-		
 	}
 	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, String value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-		
 	}
 	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, char value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-		
 	}
 	
 	public Row findRow(int row, Sheet sheet) {
 		cellRefer =new CellReference(row-1,0);
-		
 		return checkRowCreate(cellRefer,sheet);
+	}
+	
+	public CellReference findRef(int row, int column) {
+		return new CellReference(row-1,column-1);
 	}
 }

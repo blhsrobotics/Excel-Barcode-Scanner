@@ -11,6 +11,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
+import GUIs.mainGUI;
 import excel.WorkBook;
 import scanning.ScannerLibrary;
 
@@ -31,7 +32,7 @@ public class Main {
 		
 		
 		ScannerLibrary library = new ScannerLibrary(path);
-		
+		new mainGUI();
 	}
 	
 	public static void running() {

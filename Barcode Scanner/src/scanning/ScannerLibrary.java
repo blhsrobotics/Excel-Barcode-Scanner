@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import GUIs.StudentGUI;
 import excel.WorkBook;
 
 public class ScannerLibrary {
@@ -29,40 +30,38 @@ public class ScannerLibrary {
 	Scanner system = new Scanner(System.in);
 	static WorkBook book;
 	Sheet[] sheets;
-	Sheet primary;
+	static Sheet primary;
 	final String[] markers = new String[] {
 			"ID'S","NAMES",};
 	static Cell studentID;
 	static Cell studentName;
+	static int StringRow = 1;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
 	
 		file = path;
 		book = new WorkBook(file);
 		System.out.println("made book");
-		
-		sheets = book.getSheets();
 		primary = book.getPrimarySheet(sheetName);
-	    studentID = book.findDataInRow("Student IDs", 1, primary,50);
+		setMergers();
+		studentID = book.findDataInRow("Student IDs", 1, primary,50);
 	    studentName = book.findDataInRow("Student Names", 1, primary,50);
-	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
 	    System.out.println("StudentID Column is: " +studentID.getAddress());
 	    System.out.println("StudentName Column is: " +studentName.getAddress());
-	    addStudent(988837,"chase",primary);
-	    addStudent(983759,"Sidnee",primary);
-	    
+	    addStudent(98883,"Chase");
+	    addDay("10/04/2018");
 	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
 	    
-	    book.closeBook();
 	}
 	
-	public void findStudent(int id, Sheet sheet) {
+	public String findStudent(int id) {
+		return studentNumberMap.get(id);
 		
 	}
 	
 	public static void createList(int columnOne,int columnTwo, Sheet sheet) {
 		studentNumberMap.clear();
 		try {
-			int x= 1;
+			int x= 2;
 		
 			while(true) {
 				System.out.println(book.checkCellNumeric(new CellReference(x,columnOne), sheet) +", " + book.checkCellString(new CellReference(x,columnTwo), sheet));
@@ -77,19 +76,55 @@ public class ScannerLibrary {
 		}
 	}
 
-	public static void addStudent(double barcode, String name, Sheet sheet) {
-		int x = 1;
+	public static void addStudent(double barcode, String name) {
+		
+		int x = 2;
 		try{
 			while(true) {
 		
-			book.checkCellNumeric(new CellReference(x,studentID.getColumnIndex()), sheet);
+			book.checkCellNumeric(new CellReference(x,studentID.getColumnIndex()), primary);
 			x++;
 			}
 		}
 		catch(NullPointerException e) {
-			book.bufferedSetCell(new CellReference(x,studentID.getColumnIndex()), sheet, barcode);
-			book.bufferedSetCell(new CellReference(x,studentName.getColumnIndex()), sheet, name);
-			createList(studentID.getColumnIndex(),studentName.getColumnIndex(), sheet);
+			book.bufferedSetCell(new CellReference(x,studentID.getColumnIndex()), primary, barcode);
+			book.bufferedSetCell(new CellReference(x,studentName.getColumnIndex()), primary, name);
+			createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
 		}
+	}
+
+	public static void addDay(String day) {
+		
+		int x = 1;
+		try {
+			while(true) {
+				book.checkCellString(book.findRef(StringRow, x), primary);
+				System.out.println(book.checkCellString(book.findRef(StringRow, x), primary));
+				x++;
+			}
+		}
+		catch(NullPointerException e) {
+			book.setMerger(book.findRef(StringRow, x), book.findRef(StringRow, x+2), primary);
+			book.bufferedSetCell(book.findRef(StringRow, x), primary, day);
+			book.bufferedSetCell(book.findRef(StringRow, x+1), primary, "not null");
+			book.bufferedSetCell(book.findRef(StringRow, x+2), primary, "not null");
+		}
+	}
+	
+	public static void setMergers() {
+		try{book.setMerger(book.findRef(1,1),book.findRef(2,1), primary);
+		
+		
+		book.setMerger(book.findRef(1,2),book.findRef(2,2), primary);
+	    book.bufferedSetCell(book.findRef(2, 1), primary, "not null");
+	    book.bufferedSetCell(book.findRef(2,2), primary, "not null");
+		}
+		catch(IllegalStateException e) {
+			System.out.println("Merger was already set for stringRows");
+		}
+	}
+
+	public void closeBook() throws IOException {
+		book.closeBook();
 	}
 }
