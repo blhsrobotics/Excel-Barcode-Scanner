@@ -11,15 +11,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import GUIs.mainGUI;
+import application.Applicat;
 import excel.WorkBook;
+import javafx.application.Application;
 import scanning.ScannerLibrary;
 
 public class Main {
 
 	// REQUIRES ALL REFERENCED LIBRARIES. LIBRARIES DO NOT PUSH THROUGH GIT.
-	public static void main(String[] args) throws EncryptedDocumentException, IOException, InvalidFormatException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
+	/*public static void main(String[] args) throws EncryptedDocumentException, IOException, InvalidFormatException, ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException {
 		File path = null;
+		
 		JFileChooser chooser = new JFileChooser(Desktop.getDesktop().toString());
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 			       null, "xlsx");
@@ -29,10 +31,8 @@ public class Main {
 				path = chooser.getSelectedFile();
 				System.out.println(path.getAbsolutePath());
 			}	
-		
-		
+
 		ScannerLibrary library = new ScannerLibrary(path);
-		new mainGUI();
 	}
 	
 	public static void running() {
@@ -40,5 +40,5 @@ public class Main {
 		
 	}
 
-
+*/
 }

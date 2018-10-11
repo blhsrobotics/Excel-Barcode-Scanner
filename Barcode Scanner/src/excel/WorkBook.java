@@ -30,21 +30,28 @@ public class WorkBook{
 	static Row cellRow;
 	Cell cell;
 	XSSFWorkbook book;
+	XSSFWorkbook copyBook;
 	FileInputStream in;
 	Scanner scanning = new Scanner(System.in);
 	FileOutputStream out;
+	FileOutputStream outCopy;
 	File path;
 	Sheet[] sheets;
 	Row currentRow;
 	CellStyle cellStyle;
-
+	String copySpot;
 	public WorkBook(File bookName) throws EncryptedDocumentException, IOException, InvalidFormatException {
-		
 		path = bookName;
 		System.out.println(path);
 		in = new FileInputStream(path);
-	    
 		book = new XSSFWorkbook(in);
+		System.out.println(path.toString());
+		String replacing = path.toString().substring(0, path.toString().length()-5);
+		copySpot = replacing+" COPY.xlsx";
+		
+		
+		
+		
 		if(book==null) {
 			System.out.println("book path was null");
 			book = XSSFWorkbookFactory.createWorkbook(in);
@@ -107,7 +114,6 @@ public class WorkBook{
 			return (cellRow.getCell(cellRefer.getCol()));		
 		}
 	catch(NullPointerException e) {
-		System.out.println("Cell doesn't exist");
 	}
 		return null;
 	}
@@ -121,9 +127,19 @@ public class WorkBook{
 		book.write(out);
 		out.flush();
 		out.close();
+		
+		copyBook = book;
+		outCopy = new FileOutputStream(new File(copySpot));
+		
+		copyBook.write(outCopy);
+		outCopy.flush();
+		out.close();
 		book.close();
-	}
+		System.out.println("Closed and saved");
+		}
 
+	
+	
 	public Sheet[] getSheets() {
 		sheets = new Sheet[book.getNumberOfSheets()];
 		for(int x = 0; x<book.getNumberOfSheets();x++){
@@ -143,6 +159,8 @@ public class WorkBook{
 	
 	public Cell checkRowCellCreate(CellReference refer, Sheet sheet) {
 		cellRefer = refer;
+		System.out.println("cellref is: "+cellRefer.toString());
+		System.out.println("Sheet is: "+sheet.toString());
 		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
 			System.out.println("was null at: "+refer.formatAsString());
 			currentRow = sheet.createRow(cellRefer.getRow());
@@ -203,13 +221,17 @@ public class WorkBook{
 	
 	public Cell findDataInRow(String data, int rowNum, Sheet sheet,int search) {
 		Row row = findRow(rowNum,sheet);
+		System.out.println("First cell num is: "+row.getFirstCellNum());
+		System.out.println("Row num is " +row.getRowNum());
 		cell = row.getCell(row.getFirstCellNum());
 		
 		int x = 0;
 		while(x<=search) {
 			cell = cellFinder(new CellReference(row.getRowNum(),x),sheet);
 			if(!(cell==null)) {
-			if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
+				System.out.println("Current cell is : " +cell.toString());
+				if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
+				System.out.println("Returning: "+cell.toString());
 				return cell;
 			}
 			
@@ -252,7 +274,8 @@ public class WorkBook{
 	public void bufferedSetCell(CellReference refer, Sheet sheet, String value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-	}
+		System.out.println("Set cell to " +value);
+		}
 	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, char value) {
 		checkRowCellCreate(refer, sheet);
@@ -260,11 +283,17 @@ public class WorkBook{
 	}
 	
 	public Row findRow(int row, Sheet sheet) {
-		cellRefer =new CellReference(row-1,0);
+		System.out.println("RowNumber is: " +row);
+		cellRefer =findRef(row,1);
+		checkRowCellCreate(cellRefer,sheet);
 		return checkRowCreate(cellRefer,sheet);
 	}
 	
 	public CellReference findRef(int row, int column) {
 		return new CellReference(row-1,column-1);
+	}
+
+	public Sheet createSheet(String name) {
+		return book.createSheet(name);
 	}
 }

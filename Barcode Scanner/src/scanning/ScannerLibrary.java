@@ -3,6 +3,7 @@ package scanning;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -18,8 +19,17 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import GUIs.StudentGUI;
+import application.Applicat;
 import excel.WorkBook;
+import javafx.application.Application;
+
+/*
+ * Copyright © 2010 by Chase E. Arline
+All rights reserved. This program or any portion thereof
+may not be reproduced or used in any manner whatsoever
+without the express written permission of the publisher.
+ */
+
 
 public class ScannerLibrary {
 	int amountOfStudents;
@@ -35,22 +45,43 @@ public class ScannerLibrary {
 			"ID'S","NAMES",};
 	static Cell studentID;
 	static Cell studentName;
+	static Cell studentHours;
 	static int StringRow = 1;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
-	
+		
+		
+		hasSignedIn();
 		file = path;
 		book = new WorkBook(file);
+		
 		System.out.println("made book");
 		primary = book.getPrimarySheet(sheetName);
-		setMergers();
-		studentID = book.findDataInRow("Student IDs", 1, primary,50);
-	    studentName = book.findDataInRow("Student Names", 1, primary,50);
-	    System.out.println("StudentID Column is: " +studentID.getAddress());
-	    System.out.println("StudentName Column is: " +studentName.getAddress());
-	    addStudent(98883,"Chase");
-	    addDay("10/04/2018");
-	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
+		
+		primary = checkPrimary(primary);
+		System.out.println(primary.toString());
+		
+		studentID = book.findDataInRow("Student IDs", 1, primary,10);
+	    studentName = book.findDataInRow("Student Names", 1, primary,10);
+		studentHours = book.findDataInRow("Student Hours ", 1, primary, 10);
+		
+	    if(studentID==null) {
+	    	System.out.println("Couldn't find marker cells, creating them");
+	    	createMarkerCells();
+	    	studentID = book.findDataInRow("Student IDs", 1, primary,10);
+		    studentName = book.findDataInRow("Student Names", 1, primary,10);
+			studentHours = book.findDataInRow("Student Hours ", 1, primary, 10);
+			
+			System.out.println("check is: "+book.checkCellString(book.findRef(1, 1), primary));
+			System.out.println("check two is: " +book.checkCellString(book.findRef(1, 2), primary));
+			System.out.println(studentID);
+	    }
 	    
+		System.out.println("StudentID Column is: " +studentID.getAddress());
+	    System.out.println("StudentName Column is: " +studentName.getAddress());
+	    setMergers();
+	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
+	    closeBook();
+	
 	}
 	
 	public String findStudent(int id) {
@@ -112,12 +143,16 @@ public class ScannerLibrary {
 	}
 	
 	public static void setMergers() {
-		try{book.setMerger(book.findRef(1,1),book.findRef(2,1), primary);
-		
+		try{
+		book.setMerger(book.findRef(1,1),book.findRef(2,1), primary);
 		
 		book.setMerger(book.findRef(1,2),book.findRef(2,2), primary);
-	    book.bufferedSetCell(book.findRef(2, 1), primary, "not null");
+	    
+		book.setMerger(book.findRef(1, 3), book.findRef(2, 3), primary);
+		
+		book.bufferedSetCell(book.findRef(2, 1), primary, "not null");
 	    book.bufferedSetCell(book.findRef(2,2), primary, "not null");
+		book.bufferedSetCell(book.findRef(2, 3), primary, "not null");
 		}
 		catch(IllegalStateException e) {
 			System.out.println("Merger was already set for stringRows");
@@ -127,4 +162,26 @@ public class ScannerLibrary {
 	public void closeBook() throws IOException {
 		book.closeBook();
 	}
+
+	public void hasSignedIn() {
+		System.out.println(ZonedDateTime.now().toString().substring(11,19));
+		System.out.println(ZonedDateTime.now().toString().substring(0, 10));
+	}
+	
+	public static void createMarkerCells() {
+		book.bufferedSetCell(book.findRef(1,1), primary, "Student IDs");
+		book.bufferedSetCell(book.findRef(1, 2), primary, "Student Names");
+		book.bufferedSetCell(book.findRef(1, 3), primary, "Student Hours");
+	}
+	
+	public static Sheet checkPrimary(Sheet prim) {
+		if(prim==null) {
+			System.out.println("Primary was null");
+			
+			return book.createSheet(new String("Student IDs"));
+			}
+		
+		return prim;
+	}
+	
 }
