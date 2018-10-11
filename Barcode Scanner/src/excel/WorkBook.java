@@ -227,9 +227,7 @@ public class WorkBook{
 			cell = cellFinder(new CellReference(row.getRowNum(),x),sheet);
 			//System.out.println("DataRowCell: "+(new CellReference(row.getRowNum(),x)).toString());
 			if(!(cell==null)) {
-				System.out.println("Current cell is : " +cell.toString());
 				if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
-				System.out.println("Returning: "+cell.toString());
 				return cell;
 			}
 			

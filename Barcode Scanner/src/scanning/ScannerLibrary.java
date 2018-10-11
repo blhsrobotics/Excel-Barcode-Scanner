@@ -172,17 +172,7 @@ public class ScannerLibrary {
 	public void closeBook() throws IOException {
 		book.closeBook();
 	}
-
-	/*
-	 * public boolean hasSignedIn() {
-	 
-		System.out.println(ZonedDateTime.now().toString().substring(11,19));
-		
-		System.out.println(ZonedDateTime.now().toString().substring(0, 10));
-			
-		
-	}
-	*/
+	
 	public static void createMarkerCells() {
 		
 		book.bufferedSetCell(new CellReference(stringRow,0), primary, "Student IDs");

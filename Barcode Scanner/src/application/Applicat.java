@@ -149,11 +149,13 @@ public class Applicat extends Application {
 		    	fade.setFromValue(1);
 		    	try{
 		    		lib.signInOut(Double.parseDouble(userTextField.getText()));
+		    		userTextField.clear();
 		    		actionText.setText("Logged in...");
 			    	fade.play();
+		    	
 		    	}
 		    	catch(NumberFormatException | NullPointerException g) {
-		    		actionText.setText("Error: Incorrect Number");
+		    		actionText.setText("Error: Incorrect Input");
 		    		fade.play();
 		    	}
 		    	
@@ -210,15 +212,40 @@ public class Applicat extends Application {
 		      primaryStage.setScene(addScene);
 		      continueButton.setOnAction(new EventHandler<ActionEvent>() {
 				    @Override
-				    public void handle(ActionEvent e) {
+				    public void handle(ActionEvent s) {
+				    	Text pop = new Text();
+				    	FadeTransition fader = new FadeTransition(new Duration(1300));
+				    	secondGrid.add(pop, 3, 3,2,1);
+				    	pop.setFont(basic);
+				    	pop.setFill(Color.WHITE);
+				    	fader.setNode(pop);
+				    	fader.setToValue(0);
+				    	fader.setFromValue(1);
+				    	try {
 				    	lib.addStudent(Double.parseDouble(numberBox.getText()), userText.getText().toString());
-				    	primaryStage.setScene(scene);
+				    	pop.setText("Student added...");
+				    	fader.play();	
+				    	}
+				    catch(NumberFormatException | NullPointerException h) {
+				    	pop.setText("Error: Incorrect Info");
+				    	fader.play();
 				    }
-					});
+				    
+				    fader.setOnFinished(new EventHandler<ActionEvent>() {
+
+				        @Override
+				        public void handle(ActionEvent event) {
+				            primaryStage.setScene(scene);
+				        }
+				    });
+				    
+				    
+				    
+				    }});
 		      
 		      cancelButton.setOnAction(new EventHandler<ActionEvent>() {
 				    @Override
-				    public void handle(ActionEvent e) {
+				    public void handle(ActionEvent l) {
 				    	primaryStage.setScene(scene);
 				    }
 					});
