@@ -44,13 +44,13 @@ public class ScannerLibrary {
 	final String[] markers = new String[] {
 			"ID'S","NAMES",};
 	static Cell studentID;
-	static Cell studentName;
+	static Cell studentNames;
 	static Cell studentHours;
-	static int StringRow = 1;
+	static int stringRow = 0;
+	static String studentHoursS = "Student Hours";
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
 		
-		
-		hasSignedIn();
+		//hasSignedIn();
 		file = path;
 		book = new WorkBook(file);
 		
@@ -60,31 +60,40 @@ public class ScannerLibrary {
 		primary = checkPrimary(primary);
 		System.out.println(primary.toString());
 		
-		studentID = book.findDataInRow("Student IDs", 1, primary,10);
-	    studentName = book.findDataInRow("Student Names", 1, primary,10);
-		studentHours = book.findDataInRow("Student Hours ", 1, primary, 10);
+		studentID = book.findDataInRow("Student IDs", stringRow, primary,10);
+	    studentNames = book.findDataInRow("Student Names", stringRow, primary,10);
+		studentHours = book.findDataInRow(studentHoursS, stringRow, primary, 10);
 		
 	    if(studentID==null) {
 	    	System.out.println("Couldn't find marker cells, creating them");
 	    	createMarkerCells();
-	    	studentID = book.findDataInRow("Student IDs", 1, primary,10);
-		    studentName = book.findDataInRow("Student Names", 1, primary,10);
-			studentHours = book.findDataInRow("Student Hours ", 1, primary, 10);
-			
-			System.out.println("check is: "+book.checkCellString(book.findRef(1, 1), primary));
-			System.out.println("check two is: " +book.checkCellString(book.findRef(1, 2), primary));
-			System.out.println(studentID);
+	    	studentID = book.findDataInRow("Student IDs", stringRow, primary,10);
+		    studentNames = book.findDataInRow("Student Names", stringRow, primary,10);
+			studentHours = book.findDataInRow(studentHoursS, stringRow, primary, 20);
+			System.out.println(studentHours);
+			System.out.println("check is: "+book.checkCellString(new CellReference(stringRow,0), primary));
+			System.out.println("check two is: " +book.checkCellString(new CellReference(stringRow, 1), primary));
+			System.out.println("check three is" +book.checkCellString(new CellReference(stringRow, 2), primary));
+			System.out.println("StudentID col index: "+studentID.getColumnIndex());
+			primary.autoSizeColumn(studentID.getColumnIndex());
+			primary.autoSizeColumn(studentNames.getColumnIndex());
+			primary.autoSizeColumn(studentHours.getColumnIndex());
 	    }
-	    
+	    System.out.println(studentHours.getAddress());
 		System.out.println("StudentID Column is: " +studentID.getAddress());
-	    System.out.println("StudentName Column is: " +studentName.getAddress());
+	    System.out.println("StudentName Column is: " +studentNames.getAddress());
 	    setMergers();
-	    createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
+	   
+	    addStudent(988837,"Chase Arline");
+	    addCurrentDay();
+	    signInOut(988837);
+	    createList(studentID.getColumnIndex(),studentNames.getColumnIndex(), primary);
 	    closeBook();
 	
 	}
 	
-	public String findStudent(int id) {
+	public String findStudent(double id) {
+		createList(studentID.getColumnIndex(),studentNames.getColumnIndex(),primary);
 		return studentNumberMap.get(id);
 		
 	}
@@ -92,11 +101,11 @@ public class ScannerLibrary {
 	public static void createList(int columnOne,int columnTwo, Sheet sheet) {
 		studentNumberMap.clear();
 		try {
-			int x= 2;
-		
+			int x= stringRow+2;
 			while(true) {
-				System.out.println(book.checkCellNumeric(new CellReference(x,columnOne), sheet) +", " + book.checkCellString(new CellReference(x,columnTwo), sheet));
 				studentNumberMap.put(book.checkCellNumeric(new CellReference(x,columnOne), sheet), book.checkCellString(new CellReference(x,columnTwo), sheet));
+				System.out.println("added: "+book.checkCellNumeric(new CellReference(x,columnOne), primary));
+				System.out.println("with :"+book.checkCellString(new CellReference(x,columnTwo), primary));
 				x++;
 			}
 		}
@@ -106,10 +115,10 @@ public class ScannerLibrary {
 		
 		}
 	}
-
+	
 	public static void addStudent(double barcode, String name) {
 		
-		int x = 2;
+		int x = stringRow+2;
 		try{
 			while(true) {
 		
@@ -119,59 +128,73 @@ public class ScannerLibrary {
 		}
 		catch(NullPointerException e) {
 			book.bufferedSetCell(new CellReference(x,studentID.getColumnIndex()), primary, barcode);
-			book.bufferedSetCell(new CellReference(x,studentName.getColumnIndex()), primary, name);
-			createList(studentID.getColumnIndex(),studentName.getColumnIndex(), primary);
+			book.bufferedSetCell(new CellReference(x,studentNames.getColumnIndex()), primary, name);
+			book.bufferedSetCell(new CellReference(x,studentHours.getColumnIndex()), primary, 0);
+			createList(studentID.getColumnIndex(),studentNames.getColumnIndex(), primary);
 		}
 	}
 
-	public static void addDay(String day) {
+	public static void addCurrentDay() {
 		
-		int x = 1;
+		int x = 0;
 		try {
 			while(true) {
-				book.checkCellString(book.findRef(StringRow, x), primary);
-				System.out.println(book.checkCellString(book.findRef(StringRow, x), primary));
+				book.checkCellString(new CellReference(stringRow, x), primary);
+				System.out.println(book.checkCellString(new CellReference(stringRow, x), primary));
 				x++;
 			}
 		}
 		catch(NullPointerException e) {
-			book.setMerger(book.findRef(StringRow, x), book.findRef(StringRow, x+2), primary);
-			book.bufferedSetCell(book.findRef(StringRow, x), primary, day);
-			book.bufferedSetCell(book.findRef(StringRow, x+1), primary, "not null");
-			book.bufferedSetCell(book.findRef(StringRow, x+2), primary, "not null");
-		}
+			book.setMerger(new CellReference(stringRow, x), new CellReference(stringRow, x+2), primary);
+			book.bufferedSetCell(new CellReference(stringRow+1, x), primary, "Sign in");
+			book.bufferedSetCell(new CellReference(stringRow+1, x+2), primary, "Sign out");
+			
+			book.bufferedSetCell(new CellReference(stringRow+1, x+1),primary,"Hours On Day");
+			book.bufferedSetCell(new CellReference(stringRow, x), primary, currentDay() );
+			book.bufferedSetCell(new CellReference(stringRow, x+1), primary, "not null");
+			book.bufferedSetCell(new CellReference(stringRow, x+2), primary, "not null");
+			primary.autoSizeColumn(x);
+			primary.autoSizeColumn(x+1);
+			primary.autoSizeColumn(x+2);
+			}
 	}
 	
 	public static void setMergers() {
 		try{
-		book.setMerger(book.findRef(1,1),book.findRef(2,1), primary);
+		book.setMerger(new CellReference(stringRow,studentID.getColumnIndex()),new CellReference(stringRow+1,studentID.getColumnIndex()), primary);
 		
-		book.setMerger(book.findRef(1,2),book.findRef(2,2), primary);
+		book.setMerger(new CellReference(stringRow,studentNames.getColumnIndex()),new CellReference(stringRow+1,studentNames.getColumnIndex()), primary);
 	    
-		book.setMerger(book.findRef(1, 3), book.findRef(2, 3), primary);
+		book.setMerger(new CellReference(stringRow, studentHours.getColumnIndex()), new CellReference(stringRow+1, studentHours.getColumnIndex()), primary);
 		
-		book.bufferedSetCell(book.findRef(2, 1), primary, "not null");
-	    book.bufferedSetCell(book.findRef(2,2), primary, "not null");
-		book.bufferedSetCell(book.findRef(2, 3), primary, "not null");
+		book.bufferedSetCell(new CellReference(stringRow+1, studentID.getColumnIndex()), primary, "not null");
+	    book.bufferedSetCell(new CellReference(stringRow+1,studentNames.getColumnIndex()), primary, "not null");
+		book.bufferedSetCell(new CellReference(stringRow+1, studentHours.getColumnIndex()), primary, "not null");
 		}
 		catch(IllegalStateException e) {
 			System.out.println("Merger was already set for stringRows");
 		}
 	}
-
+	
 	public void closeBook() throws IOException {
 		book.closeBook();
 	}
 
-	public void hasSignedIn() {
+	/*
+	 * public boolean hasSignedIn() {
+	 
 		System.out.println(ZonedDateTime.now().toString().substring(11,19));
+		
 		System.out.println(ZonedDateTime.now().toString().substring(0, 10));
+			
+		
 	}
-	
+	*/
 	public static void createMarkerCells() {
-		book.bufferedSetCell(book.findRef(1,1), primary, "Student IDs");
-		book.bufferedSetCell(book.findRef(1, 2), primary, "Student Names");
-		book.bufferedSetCell(book.findRef(1, 3), primary, "Student Hours");
+		
+		book.bufferedSetCell(new CellReference(stringRow,0), primary, "Student IDs");
+		book.bufferedSetCell(new CellReference(stringRow, 1), primary, "Student Names");
+		book.bufferedSetCell(new CellReference(stringRow, 2), primary, studentHoursS);
 	}
 	
 	public static Sheet checkPrimary(Sheet prim) {
@@ -183,5 +206,69 @@ public class ScannerLibrary {
 		
 		return prim;
 	}
+	
+	public boolean hasSigned(double barcode) {
+		int rowCell = book.findDataInColumn(findStudent(barcode), studentNames.getColumnIndex(), primary, 50).getRowIndex();
+		int colCell = book.findDataInRow(currentDay(), stringRow, primary, 50).getColumnIndex();
+		Cell cell = book.cellFinder(new CellReference(rowCell,colCell), primary);
+		if(cell==null) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
+	public void signInOut(double barcode) {
+		
+		System.out.println(barcode);
+		System.out.println(findStudent(barcode));
+		int rowCell = book.findDataInColumn(findStudent(barcode), studentNames.getColumnIndex(), primary, 50).getRowIndex();
+		int colCell = book.findDataInRow(currentDay(), stringRow, primary, 50).getColumnIndex();
+		System.out.println(new CellReference(rowCell,colCell).toString());
+		if(hasSigned(barcode)) {
+			book.bufferedSetCell(new CellReference(rowCell,studentHours.getColumnIndex()), primary, 
+				 (book.checkCellNumeric(new CellReference(rowCell,studentHours.getColumnIndex()),primary)
+				  -book.checkCellNumeric(new CellReference(rowCell,colCell+1), primary)));
+			
+			book.bufferedSetCell(new CellReference(rowCell,colCell+2), primary,currentTime());
+			primary.autoSizeColumn(colCell+2);
+			System.out.println(timeChange(rowCell,colCell));
+			book.bufferedSetCell(new CellReference(rowCell,studentHours.getColumnIndex()), primary,
+					(book.checkCellNumeric(new CellReference(rowCell,studentHours.getColumnIndex()), primary)+timeChange(rowCell,colCell)));
+			
+			book.bufferedSetCell(new CellReference(rowCell,colCell+1),primary, timeChange(rowCell,colCell));
+		
+		}
+		else {
+			book.bufferedSetCell(new CellReference(rowCell,colCell), primary, currentTime());
+			primary.autoSizeColumn(colCell+2);
+			book.bufferedSetCell(new CellReference(rowCell,colCell+1), primary, 0);
+		}
+	}
+	public static String currentDay() {
+		return ZonedDateTime.now().toString().substring(0, 10);
+	}
+	
+	public static String currentTime() {
+		return ZonedDateTime.now().toString().substring(11, 19);
+	}
+
+	public static double timeChange(int rowCell, int colCell) {
+		String timeOne = book.checkCellString(new CellReference(rowCell, colCell),primary);
+		String timeTwo = book.checkCellString(new CellReference(rowCell,colCell+2), primary);
+		
+		int hourTimeOne = Integer.parseInt(timeOne.substring(0, 2));
+		int hourTimeTwo = Integer.parseInt(timeTwo.substring(0, 2));
+		double minuteTimeOne = Double.parseDouble(timeOne.substring(3,5));
+		double minuteTimeTwo = Double.parseDouble(timeTwo.substring(3,5));
+		System.out.println("hour1: "+ hourTimeOne);
+		System.out.println("hour2 "+ hourTimeTwo);
+		System.out.println("minute1 "+ minuteTimeOne);
+		System.out.println("minute2 "+ minuteTimeTwo);
+		double timeChange = (hourTimeTwo-hourTimeOne)+(minuteTimeTwo-minuteTimeOne)/60;
+			return timeChange;
+	}
+
 	
 }

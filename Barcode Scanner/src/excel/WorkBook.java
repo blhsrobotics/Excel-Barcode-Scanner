@@ -65,6 +65,12 @@ public class WorkBook{
 	
 	public String checkCellString(CellReference refer, Sheet sheet) {
 		cell = cellFinder(refer,sheet);
+		
+		
+		if(cell.getCellType().toString().equals("NUMERIC")) {
+			return Double.toString(cell.getNumericCellValue());
+		}
+		
 		return cell.getStringCellValue();
 	}
 	
@@ -159,8 +165,6 @@ public class WorkBook{
 	
 	public Cell checkRowCellCreate(CellReference refer, Sheet sheet) {
 		cellRefer = refer;
-		System.out.println("cellref is: "+cellRefer.toString());
-		System.out.println("Sheet is: "+sheet.toString());
 		if((currentRow = sheet.getRow(cellRefer.getRow()))==null) {
 			System.out.println("was null at: "+refer.formatAsString());
 			currentRow = sheet.createRow(cellRefer.getRow());
@@ -186,11 +190,6 @@ public class WorkBook{
 			return currentRow;
 		}	
 		return currentRow;
-	}
-	
-	public CellReference cellRefFinder(String location) {
-		CellReference refer = new CellReference(location);
-		return refer;
 	}
 	
 	public void setMerger(CellReference cellOne, CellReference cellTwo, Sheet sheet) {
@@ -221,13 +220,12 @@ public class WorkBook{
 	
 	public Cell findDataInRow(String data, int rowNum, Sheet sheet,int search) {
 		Row row = findRow(rowNum,sheet);
-		System.out.println("First cell num is: "+row.getFirstCellNum());
-		System.out.println("Row num is " +row.getRowNum());
 		cell = row.getCell(row.getFirstCellNum());
 		
 		int x = 0;
 		while(x<=search) {
 			cell = cellFinder(new CellReference(row.getRowNum(),x),sheet);
+			//System.out.println("DataRowCell: "+(new CellReference(row.getRowNum(),x)).toString());
 			if(!(cell==null)) {
 				System.out.println("Current cell is : " +cell.toString());
 				if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
@@ -242,10 +240,10 @@ public class WorkBook{
 	}
 	
 	public Cell findDataInColumn(String data, int columnNum, Sheet sheet, int search) {
-		cell = checkRowCellCreate(new CellReference(0,columnNum-1),sheet);
+		cell = checkRowCellCreate(new CellReference(0,columnNum),sheet);
 		int x = 0;
 		while(x<=search) {
-			cell = checkRowCellCreate(new CellReference(x,columnNum-1),sheet);
+			cell = checkRowCellCreate(new CellReference(x,columnNum),sheet);
 			if(!(cell==null)) {
 				if((checkCellString(new CellReference(cell), sheet)).equals(data)) { 
 				return cell;
@@ -274,7 +272,7 @@ public class WorkBook{
 	public void bufferedSetCell(CellReference refer, Sheet sheet, String value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
-		System.out.println("Set cell to " +value);
+		System.out.println("Set "+ refer.toString()+ "to"+ value);
 		}
 	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, char value) {
@@ -283,8 +281,7 @@ public class WorkBook{
 	}
 	
 	public Row findRow(int row, Sheet sheet) {
-		System.out.println("RowNumber is: " +row);
-		cellRefer =findRef(row,1);
+		cellRefer = new CellReference(row,1);
 		checkRowCellCreate(cellRefer,sheet);
 		return checkRowCreate(cellRefer,sheet);
 	}
