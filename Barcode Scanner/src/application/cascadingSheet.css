@@ -1,7 +1,9 @@
 
 .root{
 	
-	-fx-background-color: linear-gradient(black, #008888);
+	-fx-background-image: url("tealGray.jpg");
+	-fx-background-size: 600 600;
+	-fx-background-position: center;
 
 	
 

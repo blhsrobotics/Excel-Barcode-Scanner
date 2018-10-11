@@ -140,8 +140,25 @@ public class Applicat extends Application {
 			 
 		    @Override
 		    public void handle(ActionEvent e) {
-		      System.out.println(fadeGroup.getChildren().size());
-		      
+		    	if(!lib.hasCurrentDay())
+		    		lib.addCurrentDay();
+		    	actionText.setFont(basic);
+		    	FadeTransition fade =new FadeTransition(new Duration(1300));
+		    	fade.setNode(actionText);
+		    	fade.setToValue(0);
+		    	fade.setFromValue(1);
+		    	try{
+		    		lib.signInOut(Double.parseDouble(userTextField.getText()));
+		    		actionText.setText("Logged in...");
+			    	fade.play();
+		    	}
+		    	catch(NumberFormatException | NullPointerException g) {
+		    		actionText.setText("Error: Incorrect Number");
+		    		fade.play();
+		    	}
+		    	
+		    	
+		    	
 		    }
 		});
 		
@@ -149,8 +166,64 @@ public class Applicat extends Application {
 			 
 		    @Override
 		    public void handle(ActionEvent e) {
-		      
+		      Scene addScene;
+		      GridPane secondGrid = new GridPane();
+		      secondGrid.setAlignment(Pos.CENTER);
+			  secondGrid.setHgap(10);
+			  secondGrid.setVgap(10);
+			  secondGrid.setPadding(new Insets(25,25,25,25));
+			  addScene = new Scene(secondGrid,350,275);
+		      addScene.getStylesheets().add(Applicat.class.getResource
+					("cascadingSheet.css").toExternalForm());
 		    
+		      TextField userText = new TextField();
+		      userText.setFont(basic);
+		      
+		      TextField numberBox = new TextField();
+		      numberBox.setFont(basic);
+		      
+		      Button continueButton = new Button("Sign up");
+		      HBox continueBox = new HBox(10);
+		      continueBox.setAlignment(Pos.BOTTOM_RIGHT);
+		      continueBox.getChildren().add(continueButton);
+		      
+		      Label userLabel = new Label("Name: ");
+		      userLabel.setFont(basic);
+		      userLabel.setTextFill(Color.WHITE);
+		      
+		      Label numLabel =  new Label("Scan card: ");
+		      numLabel.setFont(basic);
+		      numLabel.setTextFill(Color.WHITE);
+		      
+		      Button cancelButton = new Button("Cancel");
+		      HBox cancelBox = new HBox(10);
+		      cancelBox.setAlignment(Pos.BOTTOM_LEFT);
+		      cancelBox.getChildren().add(cancelButton);
+		      
+		      
+		      secondGrid.add(userLabel, 0, 0,2,1);
+		      secondGrid.add(userText, 3, 0,2,1);
+		      secondGrid.add(numLabel, 0, 1,2,1);
+		      secondGrid.add(numberBox, 3, 1,2,1);
+		      secondGrid.add(continueBox, 3, 2,2,1);
+		      secondGrid.add(cancelBox, 0, 2,2,1);
+		      primaryStage.setScene(addScene);
+		      continueButton.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override
+				    public void handle(ActionEvent e) {
+				    	lib.addStudent(Double.parseDouble(numberBox.getText()), userText.getText().toString());
+				    	primaryStage.setScene(scene);
+				    }
+					});
+		      
+		      cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override
+				    public void handle(ActionEvent e) {
+				    	primaryStage.setScene(scene);
+				    }
+					});
+
+		      
 		    }
 		});
 		
@@ -175,6 +248,12 @@ public class Applicat extends Application {
 			}
 		lib = new ScannerLibrary(path);
 	}
+	
+	@Override
+	public void stop() throws IOException {
+		lib.closeBook();
+	}
+	
 	
 	public static void main(String[] args) {
 		new Applicat().launch(args);

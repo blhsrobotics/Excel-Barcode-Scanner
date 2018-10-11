@@ -83,13 +83,6 @@ public class ScannerLibrary {
 		System.out.println("StudentID Column is: " +studentID.getAddress());
 	    System.out.println("StudentName Column is: " +studentNames.getAddress());
 	    setMergers();
-	   
-	    addStudent(988837,"Chase Arline");
-	    addCurrentDay();
-	    signInOut(988837);
-	    createList(studentID.getColumnIndex(),studentNames.getColumnIndex(), primary);
-	    closeBook();
-	
 	}
 	
 	public String findStudent(double id) {
@@ -270,5 +263,14 @@ public class ScannerLibrary {
 			return timeChange;
 	}
 
-	
+	public static boolean hasCurrentDay() {
+		try{
+			if(book.findDataInRow(currentDay(),stringRow, primary, 100)==null)
+				return false;
+		}
+		catch(NullPointerException e) {
+			return false;
+		}
+		return true;
+	}
 }
