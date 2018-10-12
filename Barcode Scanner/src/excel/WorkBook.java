@@ -291,4 +291,15 @@ public class WorkBook{
 	public Sheet createSheet(String name) {
 		return book.createSheet(name);
 	}
+
+	public void keepSingleSheet(Sheet primary) {
+		for(int x = 0; x<book.getNumberOfSheets();x++) {
+			if(book.getSheetAt(x).equals(primary)) {
+				
+			}
+			else {
+				book.removeSheetAt(x);
+			}
+		}
+	}
 }

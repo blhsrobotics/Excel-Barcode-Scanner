@@ -49,7 +49,7 @@ public class Applicat extends Application {
 	GridPane mainGrid = new GridPane();
 	static ScannerLibrary lib;
 	static File path;
-	
+	boolean hasLoggedStudents = false;
 	@Override
 	public void init() {
 		  try {
@@ -92,8 +92,6 @@ public class Applicat extends Application {
 		userName.setFont(Font.font("Tahoma",FontWeight.NORMAL,18));
 		
 		TextField userTextField = new TextField();
-		
-		
 		
 		Label scanning = new Label("Waiting for scan");
 		scanning.setFont(Font.font(16));
@@ -152,7 +150,7 @@ public class Applicat extends Application {
 		    		userTextField.clear();
 		    		actionText.setText("Logged in...");
 			    	fade.play();
-		    	
+		    	hasLoggedStudents = true;
 		    	}
 		    	catch(NumberFormatException | NullPointerException g) {
 		    		actionText.setText("Error: Incorrect Input");
@@ -274,13 +272,17 @@ public class Applicat extends Application {
 				System.out.println(path.getAbsolutePath());
 			}
 		lib = new ScannerLibrary(path);
+		lib.onlyKeepPrimarySheet();
 	}
 	
 	@Override
 	public void stop() throws IOException {
+		if(hasLoggedStudents)
+		lib.checkSignOuts();
+		
 		lib.closeBook();
+		
 	}
-	
 	
 	public static void main(String[] args) {
 		new Applicat().launch(args);
