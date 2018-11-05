@@ -23,6 +23,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import application.Applicat;
 import excel.WorkBook;
 import javafx.application.Application;
+import xmlfiler.Day;
 
 /*
  * Copyright © 2010 by Chase E. Arline
@@ -51,6 +52,7 @@ public class ScannerLibrary {
 	static int stringRow = 0;
 	static String studentHoursS = "Student Hours";
 	DecimalFormat decFormat = new DecimalFormat("#.##");
+	static Day day;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
 		
 		//hasSignedIn();
@@ -151,7 +153,10 @@ public class ScannerLibrary {
 			primary.autoSizeColumn(x);
 			primary.autoSizeColumn(x+1);
 			primary.autoSizeColumn(x+2);
-			}
+		
+			day = new Day(currentDay());
+			
+		}
 	}
 	
 	public static void setMergers() {
@@ -279,7 +284,7 @@ public class ScannerLibrary {
 	}
 
 	public void checkSignOuts() {
-		for(int x = stringRow+2; x<studentNumberMap.size()+2;x++) {
+		for(int x = stringRow+2; x<studentNumberMap.size()+1;x++) {
 			if(hasLoggedIn(rowBarcodeMap.get(x))) {
 				if(!hasSignedOut(rowBarcodeMap.get(x))) 
 					signInOut(rowBarcodeMap.get(x));
