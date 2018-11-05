@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.bind.JAXBException;
 
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -35,6 +36,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import scanning.ScannerLibrary;
+import xmlfiler.Day;
+import xmlfiler.XMLFiler;
+import xmlfiler.XmlDay;
 
 /*
  * Copyright © 2010 by Chase E. Arline
@@ -50,14 +54,24 @@ public class Applicat extends Application {
 	static ScannerLibrary lib;
 	static File path;
 	boolean hasLoggedStudents = false;
+	Day today;
+	XMLFiler dayFiler;
+	XMLFiler libFiler;
 	@Override
 	public void init() {
 		  try {
-			startUp();
-		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+			startUp();  
+			today = XmlDay.xmlDayCreator();
+			dayFiler = XmlDay.dayFiler();
+			libFiler = XmlDay.libFiler();
+		  } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		  
 		  transit.setToValue(0);
 		  transit.setCycleCount(Timeline.INDEFINITE);
@@ -146,7 +160,7 @@ public class Applicat extends Application {
 		    	fade.setToValue(0);
 		    	fade.setFromValue(1);
 		    	try{
-		    		lib.signInOut(Double.parseDouble(userTextField.getText()));
+		    		lib.signInOut(Double.parseDouble(userTextField.getText()), today);
 		    		userTextField.clear();
 		    		actionText.setText("Logged in...");
 			    	fade.play();

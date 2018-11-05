@@ -3,6 +3,7 @@ package xmlfiler;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -20,16 +21,11 @@ public class XmlDay {
 	private static StudentLibrary lib = new StudentLibrary();
 	private static XMLFiler librarian;
 	private static XMLFiler filer;
-	public static void main(String[] args) throws JAXBException, IOException {
-		xmlDayCreator();
-	}
-
 	
 	
-	public static Day xmlDayCreator() throws JAXBException, IOException {
+	public XmlDay(File[] paths) {
 		today = new Day();
 	    lib = new StudentLibrary();
-		File[] paths = fileChooser();
 		File location = paths[1];
 		File directory = paths[0];
 		filer = new XMLFiler(location,today);
@@ -59,12 +55,11 @@ public class XmlDay {
 		try {
 		lib = (StudentLibrary)librarian.read();
 		}
-		catch(UnmarshalException e) {
+		catch(JAXBException e) {
 			lib = new StudentLibrary();
 		}
 		populate();
-		filer.write(today);
-		return today;
+		
 	}
 	
 	public static File[] fileChooser() {
@@ -86,7 +81,7 @@ public class XmlDay {
 		return null;	
 	}
 	
-	public static void populate() {
+	private static void populate() {
 		for(Identifiers identity:lib.getStudents()) {
 			if(today.findStudent(identity.getId())==null)
 				today.addStudent(new Student(identity));
@@ -100,5 +95,13 @@ public class XmlDay {
 	
 	public static XMLFiler libFiler() {
 		return librarian;
+	}
+	
+	public ArrayList<Identifiers> students() {
+		return lib.getStudents();
+	}
+	
+	public Day day() {
+		return today;
 	}
 }
