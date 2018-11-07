@@ -23,7 +23,7 @@ public class XmlDay {
 	private static XMLFiler filer;
 	
 	
-	public XmlDay(File[] paths) {
+	public XmlDay(File[] paths) throws IOException, JAXBException {
 		today = new Day();
 	    lib = new StudentLibrary();
 		File location = paths[1];
@@ -45,19 +45,11 @@ public class XmlDay {
 			System.out.println("Creating library at location succeeded: "+studLib.createNewFile());
 		}
 		
-		try {
-		today = (Day)filer.read();
-		
-		}
-		catch(UnmarshalException e) {
+		if((today = (Day)filer.read())==null)
 			today = new Day(CurrentTime.getDay());
-		}
-		try {
-		lib = (StudentLibrary)librarian.read();
-		}
-		catch(JAXBException e) {
+		if((lib = (StudentLibrary)librarian.read())==null)
 			lib = new StudentLibrary();
-		}
+		
 		populate();
 		
 	}
@@ -67,7 +59,7 @@ public class XmlDay {
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int returnVal = chooser.showOpenDialog(null);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File[] paths = new File[3];
+			File[] paths = new File[4];
 			paths[0] = new File(chooser.getSelectedFile().getParentFile().toString()+"/Dates/");
 			File loc = new File(chooser.getSelectedFile().getParentFile().toString()+"/Dates/"+CurrentTime.getDay()+".xml");
 			File studLib = new File(chooser.getSelectedFile().getParentFile().toString()+"/StudIDs/students.xml");
@@ -76,12 +68,13 @@ public class XmlDay {
 			System.out.println("Student directories :"+studLib.toString());
 			paths[2] = studLib;
 			paths[1] = loc;
+			paths[3] = chooser.getSelectedFile();
 			return paths;	
 		}
 		return null;	
 	}
 	
-	private static void populate() {
+	public void populate() {
 		for(Identifiers identity:lib.getStudents()) {
 			if(today.findStudent(identity.getId())==null)
 				today.addStudent(new Student(identity));
@@ -89,16 +82,16 @@ public class XmlDay {
 		}
 	}
 	
-	public static XMLFiler dayFiler() {
+	public XMLFiler dayFiler() {
 		return filer;
 	}
 	
-	public static XMLFiler libFiler() {
+	public XMLFiler libFiler() {
 		return librarian;
 	}
 	
-	public ArrayList<Identifiers> students() {
-		return lib.getStudents();
+	public StudentLibrary students() {
+		return lib;
 	}
 	
 	public Day day() {

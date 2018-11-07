@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -25,6 +26,8 @@ import excel.WorkBook;
 import javafx.application.Application;
 import xmlfiler.CurrentTime;
 import xmlfiler.Day;
+import xmlfiler.Identifiers;
+import xmlfiler.Student;
 
 /*
  * Copyright © 2010 by Chase E. Arline
@@ -52,10 +55,9 @@ public class ScannerLibrary {
 	static Cell studentHours;
 	static int stringRow = 0;
 	static String studentHoursS = "Student Hours";
-	DecimalFormat decFormat = new DecimalFormat("#.##");
+	static DecimalFormat decFormat = new DecimalFormat("#.##");
 	static Day day;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
-		
 		//hasSignedIn();
 		file = path;
 		book = new WorkBook(file);
@@ -91,7 +93,7 @@ public class ScannerLibrary {
 	    setMergers();
 	}
 	
-	public static void addStudent(double barcode, String name) {
+	public static void addStudent(double barcode, String name, ArrayList<Identifiers> students) {
 		
 		int x = stringRow+2;
 		try{
@@ -106,6 +108,9 @@ public class ScannerLibrary {
 			book.bufferedSetCell(new CellReference(x,studentNames.getColumnIndex()), primary, name);
 			book.bufferedSetCell(new CellReference(x,studentHours.getColumnIndex()), primary, 0);
 		}
+		
+		students.add(new Identifiers(barcode,name));
+		System.out.println("Added student to library in xml");
 	}
 	public static void addCurrentDay() {
 		
@@ -144,7 +149,8 @@ public class ScannerLibrary {
 		}
 	}
 	
-	public void closeBook() throws IOException {
+	public void closeBook(Day today) throws IOException {
+		populateTimes(today);
 		book.closeBook();
 	}
 	
@@ -183,10 +189,30 @@ public class ScannerLibrary {
 	public void signInOut(double id, Day today) {
 		if(today.findStudent(id).isSignedIn()) 
 			today.findStudent(id).signOut();
-		
 		else 
 			today.findStudent(id).signIn();
 		
 	}
-	
+	public static void populateTimes(Day today) {
+		int dateColumn = book.findDataInRow(CurrentTime.getDay(),stringRow, primary, 100).getColumnIndex();
+		int hoursColumn = studentHours.getColumnIndex();
+		int studentRow;
+		CellReference totalHoursRef;
+		CellReference dayHoursRef;
+		for(Student student:today.getStudents()) {
+			studentRow = book.findDataInColumn(student.getName(), studentNames.getColumnIndex(), primary, 50).getRowIndex();
+			totalHoursRef = new CellReference(studentRow,hoursColumn);
+			dayHoursRef = new CellReference(studentRow,dateColumn);
+			try {
+			book.bufferedSetCell(totalHoursRef, primary,book.checkCellNumeric(totalHoursRef, primary)-book.checkCellNumeric(dayHoursRef, primary));
+			book.bufferedSetCell(dayHoursRef,primary,Double.parseDouble(decFormat.format(student.getTotalTimeToday())));
+			book.bufferedSetCell(totalHoursRef, primary, book.checkCellNumeric(totalHoursRef, primary)+book.checkCellNumeric(dayHoursRef,primary));
+			}
+			catch(NullPointerException e) {
+				book.bufferedSetCell(dayHoursRef,primary,Double.parseDouble(decFormat.format(student.getTotalTimeToday())));
+				book.bufferedSetCell(totalHoursRef, primary, book.checkCellNumeric(totalHoursRef, primary)+book.checkCellNumeric(dayHoursRef,primary));
+			}
+			
+			}
+	}
 }

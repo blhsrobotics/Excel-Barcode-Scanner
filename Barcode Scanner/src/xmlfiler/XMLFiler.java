@@ -25,8 +25,13 @@ public class XMLFiler {
 		mar.marshal(obj, dayLocation);
 	}
 	
-	public Object read() throws JAXBException {
-		return unmar.unmarshal(dayLocation);
+	public Object read()  {
+		try {
+			return unmar.unmarshal(dayLocation);
+		} catch (JAXBException e) {
+			System.out.println("Date was new");
+		}
+		return null;
 	}
 	
 }

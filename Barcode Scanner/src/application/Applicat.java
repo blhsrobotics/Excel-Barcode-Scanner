@@ -37,6 +37,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import scanning.ScannerLibrary;
 import xmlfiler.Day;
+import xmlfiler.Identifiers;
 import xmlfiler.XMLFiler;
 import xmlfiler.XmlDay;
 
@@ -51,23 +52,19 @@ public class Applicat extends Application {
 	static FadeTransition transit = new FadeTransition();
 	Group fadeGroup = new Group();
 	GridPane mainGrid = new GridPane();
+	GridPane listGrid = new GridPane();
 	static ScannerLibrary lib;
 	static File path;
 	boolean hasLoggedStudents = false;
-	Day today;
-	XMLFiler dayFiler;
-	XMLFiler libFiler;
+	static XmlDay xmlDay;
+	static Day today;
+	static XMLFiler dayFiler;
+	static XMLFiler libFiler;
 	@Override
 	public void init() {
 		  try {
 			startUp();  
-			today = XmlDay.xmlDayCreator();
-			dayFiler = XmlDay.dayFiler();
-			libFiler = XmlDay.libFiler();
-		  } catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JAXBException e) {
+		  } catch (EncryptedDocumentException | InvalidFormatException | IOException | JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -87,6 +84,23 @@ public class Applicat extends Application {
 		mainGrid.setHgap(10);
 		mainGrid.setVgap(10);
 		mainGrid.setPadding(new Insets(25,25,25,25));
+		listGrid.setAlignment(Pos.CENTER);
+		listGrid.setHgap(10);
+		listGrid.setVgap(5);
+		listGrid.setPadding(new Insets(20,20,20,20));
+		
+		Stage list = new Stage();
+		Scene listScene = new Scene(listGrid, 250,600);
+		list.setScene(listScene);
+		populate();
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		Scene scene = new Scene(mainGrid,375,250);
 		primaryStage.setScene(scene);
@@ -171,8 +185,6 @@ public class Applicat extends Application {
 		    		fade.play();
 		    	}
 		    	
-		    	
-		    	
 		    }
 		});
 		
@@ -234,8 +246,12 @@ public class Applicat extends Application {
 				    	fader.setToValue(0);
 				    	fader.setFromValue(1);
 				    	try {
-				    	lib.addStudent(Double.parseDouble(numberBox.getText()), userText.getText().toString());
-				    	pop.setText("Student added...");
+				    	System.out.println("About to add stud");
+				    		lib.addStudent(Double.parseDouble(numberBox.getText()), userText.getText().toString(), xmlDay.students().getStudents());
+				    		System.out.println("added stud");
+				    		xmlDay.populate();
+				    		System.out.println("populated");
+				    		pop.setText("Student added...");
 				    	fader.play();	
 				    	}
 				    catch(NumberFormatException | NullPointerException h) {
@@ -244,7 +260,7 @@ public class Applicat extends Application {
 				    }
 				    
 				    fader.setOnFinished(new EventHandler<ActionEvent>() {
-
+				    	
 				        @Override
 				        public void handle(ActionEvent event) {
 				            primaryStage.setScene(scene);
@@ -271,35 +287,36 @@ public class Applicat extends Application {
 		
 	}
 	
-	
-	
-	public static void startUp() throws EncryptedDocumentException, InvalidFormatException, IOException {
+	public static void startUp() throws EncryptedDocumentException, InvalidFormatException, IOException, JAXBException {
 		path = null;
-		
-		JFileChooser chooser = new JFileChooser(Desktop.getDesktop().toString());
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-			       null, "xlsx");
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-				path = chooser.getSelectedFile();
-				System.out.println(path.getAbsolutePath());
-			}
-		lib = new ScannerLibrary(path);
+		File[] pathing = XmlDay.fileChooser();
+		xmlDay = new XmlDay(pathing);
+		today = xmlDay.day();
+		dayFiler = xmlDay.dayFiler();
+		libFiler = xmlDay.libFiler();
+		lib = new ScannerLibrary(pathing[3]);
 		lib.onlyKeepPrimarySheet();
 	}
 	
 	@Override
-	public void stop() throws IOException {
-		if(hasLoggedStudents)
-		lib.checkSignOuts();
-		
-		lib.closeBook();
-		
+	public void stop() throws IOException, JAXBException {
+		libFiler.write(xmlDay.students());
+		dayFiler.write(today);
+		lib.closeBook(today);
 	}
 	
 	public static void main(String[] args) {
 		new Applicat().launch(args);
+	}
+	
+	public static void populate(GridPane grid) {
+		int nameColumn=0;
+		int statusColumn=1;
+		for(int x=0; x<xmlDay.students().getStudents().size();x++) {
+		Text name = new Text(xmlDay.students().getStudents().get(x).getName());
+			grid.add(name, nameColumn, x);
+		
+		}
 	}
 	
 }
