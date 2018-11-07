@@ -76,10 +76,7 @@ public class WorkBook{
 	
 	public double checkCellNumeric(CellReference refer, Sheet sheet) {
 		cell = cellFinder(refer,sheet);
-		if(!(cell==null))
 		return cell.getNumericCellValue();
-		else
-			return (Double) null;
 	}
 	
 	public boolean checkCellBoolean(CellReference refer, Sheet sheet) {

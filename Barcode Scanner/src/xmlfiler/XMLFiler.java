@@ -29,7 +29,7 @@ public class XMLFiler {
 		try {
 			return unmar.unmarshal(dayLocation);
 		} catch (JAXBException e) {
-			System.out.println("Date was new");
+			System.out.println("Unmarshalled object is new");
 		}
 		return null;
 	}

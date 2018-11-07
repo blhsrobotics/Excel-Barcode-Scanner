@@ -93,7 +93,7 @@ public class ScannerLibrary {
 	    setMergers();
 	}
 	
-	public static void addStudent(double barcode, String name, ArrayList<Identifiers> students) {
+	public void addStudent(double barcode, String name) {
 		
 		int x = stringRow+2;
 		try{
@@ -109,8 +109,6 @@ public class ScannerLibrary {
 			book.bufferedSetCell(new CellReference(x,studentHours.getColumnIndex()), primary, 0);
 		}
 		
-		students.add(new Identifiers(barcode,name));
-		System.out.println("Added student to library in xml");
 	}
 	public static void addCurrentDay() {
 		
@@ -154,6 +152,10 @@ public class ScannerLibrary {
 		book.closeBook();
 	}
 	
+	public void closeBook() throws IOException {
+		book.closeBook();
+	}
+	
 	public static void createMarkerCells() {
 		
 		book.bufferedSetCell(new CellReference(stringRow,0), primary, "Student IDs");
@@ -194,7 +196,10 @@ public class ScannerLibrary {
 		
 	}
 	public static void populateTimes(Day today) {
-		int dateColumn = book.findDataInRow(CurrentTime.getDay(),stringRow, primary, 100).getColumnIndex();
+		int dateColumn =0;
+		if(hasCurrentDay()) 
+		dateColumn = book.findDataInRow(CurrentTime.getDay(),stringRow, primary, 100).getColumnIndex();
+		
 		int hoursColumn = studentHours.getColumnIndex();
 		int studentRow;
 		CellReference totalHoursRef;
@@ -213,6 +218,14 @@ public class ScannerLibrary {
 				book.bufferedSetCell(totalHoursRef, primary, book.checkCellNumeric(totalHoursRef, primary)+book.checkCellNumeric(dayHoursRef,primary));
 			}
 			
-			}
+			}	
 	}
+
+	public void populate(ArrayList<Student> students) {
+		for(Student student:students) {
+			if(book.findDataInColumn(student.getName(), studentNames.getColumnIndex(), primary, 100)==null)
+				addStudent(student.getId(),student.getName());
+		}
+	}
+
 }

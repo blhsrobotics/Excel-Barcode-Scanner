@@ -14,6 +14,8 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import javafx.animation.FadeTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -23,21 +25,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import scanning.ScannerLibrary;
 import xmlfiler.Day;
 import xmlfiler.Identifiers;
+import xmlfiler.Student;
 import xmlfiler.XMLFiler;
 import xmlfiler.XmlDay;
 
@@ -60,10 +69,15 @@ public class Applicat extends Application {
 	static Day today;
 	static XMLFiler dayFiler;
 	static XMLFiler libFiler;
+	static Font basic;
+	static ObservableList<Student> data;
+	int windowHeight = 650;
+	int windowWidth = 240;
 	@Override
 	public void init() {
 		  try {
 			startUp();  
+			basic = Font.font("Tahoma",FontWeight.NORMAL,18);
 		  } catch (EncryptedDocumentException | InvalidFormatException | IOException | JAXBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,29 +99,39 @@ public class Applicat extends Application {
 		mainGrid.setVgap(10);
 		mainGrid.setPadding(new Insets(25,25,25,25));
 		listGrid.setAlignment(Pos.CENTER);
-		listGrid.setHgap(10);
-		listGrid.setVgap(5);
-		listGrid.setPadding(new Insets(20,20,20,20));
-		
+		listGrid.setHgap(0);
+		listGrid.setVgap(0);
+		listGrid.setPadding(new Insets(0,0,0,0));
 		Stage list = new Stage();
-		Scene listScene = new Scene(listGrid, 250,600);
+		windowHeight = (25*today.getStudents().size())+40;
+		Scene listScene = new Scene(listGrid,windowWidth,windowHeight);
+		list.setResizable(false);
+		TableColumn<Student, String> nameCol = new TableColumn("Name");
+		nameCol.setCellValueFactory(cellData -> cellData.getValue().getNameProp());
+		TableColumn<Student, String> status = new TableColumn("Signed In");
+		status.setCellValueFactory(cellData -> cellData.getValue().getLoginProp());
+		nameCol.setMinWidth(120);
+		status.setMinWidth(120);
+		final TableView<Student> table = new TableView<Student>(data);
+		table.getColumns().addAll(nameCol,status);
+		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+		table.setPrefHeight(windowHeight);
+		table.setPrefWidth(windowWidth);
+		final VBox box = new VBox();
+		box.setSpacing(5);
+		box.setPadding(new Insets(0,0,0,0));
+		box.getChildren().add(table);
+		
+		listGrid.add(box, 0, 0);
 		list.setScene(listScene);
-		populate();
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		list.show();
 		Scene scene = new Scene(mainGrid,375,250);
 		primaryStage.setScene(scene);
 		scene.getStylesheets().add(Applicat.class.getResource
 				("cascadingSheet.css").toExternalForm());
 		
-		Font basic = Font.font("Tahoma",FontWeight.NORMAL,18);
+		listScene.getStylesheets().add(Applicat.class.getResource
+				("tableStyle.css").toExternalForm());
 		
 		Text sceneTitle = new Text("Login");
 		sceneTitle.setFont(Font.font("Tahoma",FontWeight.NORMAL,32));
@@ -175,12 +199,14 @@ public class Applicat extends Application {
 		    	fade.setFromValue(1);
 		    	try{
 		    		lib.signInOut(Double.parseDouble(userTextField.getText()), today);
+		    		dayFiler.write(today);
+		    		table.refresh();
 		    		userTextField.clear();
 		    		actionText.setText("Logged in...");
 			    	fade.play();
 		    	hasLoggedStudents = true;
 		    	}
-		    	catch(NumberFormatException | NullPointerException g) {
+		    	catch(NumberFormatException | NullPointerException | JAXBException g) {
 		    		actionText.setText("Error: Incorrect Input");
 		    		fade.play();
 		    	}
@@ -226,7 +252,6 @@ public class Applicat extends Application {
 		      cancelBox.setAlignment(Pos.BOTTOM_LEFT);
 		      cancelBox.getChildren().add(cancelButton);
 		      
-		      
 		      secondGrid.add(userLabel, 0, 0,2,1);
 		      secondGrid.add(userText, 3, 0,2,1);
 		      secondGrid.add(numLabel, 0, 1,2,1);
@@ -247,14 +272,22 @@ public class Applicat extends Application {
 				    	fader.setFromValue(1);
 				    	try {
 				    	System.out.println("About to add stud");
-				    		lib.addStudent(Double.parseDouble(numberBox.getText()), userText.getText().toString(), xmlDay.students().getStudents());
-				    		System.out.println("added stud");
+				    		xmlDay.students().getStudents().add(
+				    				new Identifiers(Double.parseDouble(numberBox.getText()),userText.getText()));
 				    		xmlDay.populate();
+				    		lib.populate(today.getStudents());
+				    		System.out.println("added stud");
+				    		libFiler.write(xmlDay.students());
+				    		windowHeight = windowHeight+25;
+				    		list.setHeight(windowHeight);
+				    		table.setPrefHeight(windowHeight);
+				    		data.add(today.getStudents().get(today.getStudents().size()-1));
 				    		System.out.println("populated");
 				    		pop.setText("Student added...");
 				    	fader.play();	
+				    	list.sizeToScene();
 				    	}
-				    catch(NumberFormatException | NullPointerException h) {
+				    catch(NumberFormatException | NullPointerException | JAXBException h) {
 				    	pop.setText("Error: Incorrect Info");
 				    	fader.play();
 				    }
@@ -296,27 +329,24 @@ public class Applicat extends Application {
 		libFiler = xmlDay.libFiler();
 		lib = new ScannerLibrary(pathing[3]);
 		lib.onlyKeepPrimarySheet();
+		lib.populate(today.getStudents());
+		xmlDay.students().removeStudent(today.getStudents().get(1));
+		data = FXCollections.observableArrayList(today.getStudents());
 	}
 	
 	@Override
 	public void stop() throws IOException, JAXBException {
 		libFiler.write(xmlDay.students());
 		dayFiler.write(today);
+		System.out.println("has current day: "+lib.hasCurrentDay());
+		if(lib.hasCurrentDay())
 		lib.closeBook(today);
+		else
+			lib.closeBook();
 	}
 	
 	public static void main(String[] args) {
 		new Applicat().launch(args);
-	}
-	
-	public static void populate(GridPane grid) {
-		int nameColumn=0;
-		int statusColumn=1;
-		for(int x=0; x<xmlDay.students().getStudents().size();x++) {
-		Text name = new Text(xmlDay.students().getStudents().get(x).getName());
-			grid.add(name, nameColumn, x);
-		
-		}
 	}
 	
 }

@@ -6,6 +6,11 @@ import java.util.HashMap;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Student {
 	@XmlElement(name = "Identifiers")
 	Identifiers coords = new Identifiers();
@@ -17,7 +22,6 @@ public class Student {
 	private ArrayList<String> signOutTimes = new ArrayList<String>();
 	@XmlElement(name = "isSignedIn")
 	private boolean signedIn = false;
-	
 	public Student() {}
 	public Student(double id, String name) {
 	coords.put(id, name);
@@ -78,4 +82,18 @@ public class Student {
 		
 		return hours;
 	}
+
+	public StringProperty getNameProp() {
+		return coords.getNameProp();
+	}
+	
+	public StringProperty getLoginProp() {
+		StringProperty login;
+		if(isSignedIn())
+			login = new SimpleStringProperty("Yes");
+		else
+			login = new SimpleStringProperty("No");
+		return login;
+	}
+	
 }

@@ -2,6 +2,9 @@ package xmlfiler;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Identifiers {
 	@XmlElement(name = "_ID_")
 	private double Id;
@@ -11,9 +14,10 @@ public class Identifiers {
 	public Identifiers() {}
 	public Identifiers(double id, String name) {
 		Id = id;
-		this.name = name;
+		System.out.println(name);
+		this.name= name;
 	}
-
+	
 	public double getId() {
 		return Id;
 	}
@@ -31,5 +35,10 @@ public class Identifiers {
 	public String toString() {
 		return Id+", "+name;
 		
+	}
+	
+	public StringProperty getNameProp() {
+		StringProperty sp = new SimpleStringProperty(name);
+		return sp;
 	}
 }
