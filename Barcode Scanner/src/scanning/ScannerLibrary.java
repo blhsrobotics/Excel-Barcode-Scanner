@@ -195,7 +195,7 @@ public class ScannerLibrary {
 			today.findStudent(id).signIn();
 		
 	}
-	public static void populateTimes(Day today) {
+	public void populateTimes(Day today) {
 		int dateColumn =0;
 		if(hasCurrentDay()) 
 		dateColumn = book.findDataInRow(CurrentTime.getDay(),stringRow, primary, 100).getColumnIndex();
@@ -227,5 +227,11 @@ public class ScannerLibrary {
 				addStudent(student.getId(),student.getName());
 		}
 	}
-
+	
+	public void signOutEveryone(Day today) {
+		for(Student student:today.getStudents()) {
+			student.signOut();
+		}
+	}
+	
 }

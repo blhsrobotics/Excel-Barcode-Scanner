@@ -197,6 +197,9 @@ public class Applicat extends Application {
 		    	fade.setNode(actionText);
 		    	fade.setToValue(0);
 		    	fade.setFromValue(1);
+		    	if(userTextField.getText().equals("close"))
+		    		lib.signOutEveryone(today);
+		    	
 		    	try{
 		    		lib.signInOut(Double.parseDouble(userTextField.getText()), today);
 		    		dayFiler.write(today);
@@ -336,13 +339,14 @@ public class Applicat extends Application {
 	
 	@Override
 	public void stop() throws IOException, JAXBException {
-		libFiler.write(xmlDay.students());
-		dayFiler.write(today);
-		System.out.println("has current day: "+lib.hasCurrentDay());
 		if(lib.hasCurrentDay())
 		lib.closeBook(today);
 		else
 			lib.closeBook();
+		libFiler.write(xmlDay.students());
+		dayFiler.write(today);
+		System.out.println("has current day: "+lib.hasCurrentDay());
+		
 	}
 	
 	public static void main(String[] args) {

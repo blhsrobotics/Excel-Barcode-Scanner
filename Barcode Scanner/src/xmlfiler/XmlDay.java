@@ -98,4 +98,5 @@ public class XmlDay {
 	public Day day() {
 		return today;
 	}
+
 }
