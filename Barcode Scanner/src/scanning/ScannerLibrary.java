@@ -30,7 +30,7 @@ import xmlfiler.Identifiers;
 import xmlfiler.Student;
 
 /*
- * Copyright © 2010 by Chase E. Arline
+ * Copyright ï¿½ 2010 by Chase E. Arline
 All rights reserved. This program or any portion thereof
 may not be reproduced or used in any manner whatsoever
 without the express written permission of the publisher.
@@ -173,7 +173,7 @@ public class ScannerLibrary {
 		return prim;
 	}
 	
-	public static boolean hasCurrentDay() {
+	public boolean hasCurrentDay() {
 		try{
 			if(book.findDataInRow(CurrentTime.getDay(),stringRow, primary, 100)==null)
 				return false;

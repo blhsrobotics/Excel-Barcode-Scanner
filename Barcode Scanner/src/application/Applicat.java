@@ -24,6 +24,9 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -51,7 +54,7 @@ import xmlfiler.XMLFiler;
 import xmlfiler.XmlDay;
 
 /*
- * Copyright © 2010 by Chase E. Arline
+ * Copyright ï¿½ 2010 by Chase E. Arline
 All rights reserved. This program or any portion thereof
 may not be reproduced or used in any manner whatsoever
 without the express written permission of the publisher.
@@ -73,6 +76,7 @@ public class Applicat extends Application {
 	static ObservableList<Student> data;
 	int windowHeight = 650;
 	int windowWidth = 240;
+	TableView<Student> table;
 	@Override
 	public void init() {
 		  try {
@@ -93,8 +97,20 @@ public class Applicat extends Application {
 	
 	@Override 
 	public void start(Stage primaryStage) {
+		VBox platform  = new VBox();
+		MenuBar menus = new MenuBar();
+		Menu tools = new Menu("Tools");
+		MenuItem closeAll = new MenuItem("Close");
+		closeAll.onActionProperty().set((ActionEvent e)->
+			{lib.signOutEveryone(today);
+			table.refresh();
+			}
+		)
+		;
+		tools.getItems().add(closeAll);
+		menus.getMenus().add(tools);
 		primaryStage.setTitle("Club Sign-in");
-		mainGrid.setAlignment(Pos.CENTER);
+		mainGrid.setAlignment(Pos.TOP_LEFT);
 		mainGrid.setHgap(10);
 		mainGrid.setVgap(10);
 		mainGrid.setPadding(new Insets(25,25,25,25));
@@ -112,7 +128,7 @@ public class Applicat extends Application {
 		status.setCellValueFactory(cellData -> cellData.getValue().getLoginProp());
 		nameCol.setMinWidth(120);
 		status.setMinWidth(120);
-		final TableView<Student> table = new TableView<Student>(data);
+		table = new TableView<Student>(data);
 		table.getColumns().addAll(nameCol,status);
 		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		table.setPrefHeight(windowHeight);
@@ -125,7 +141,9 @@ public class Applicat extends Application {
 		listGrid.add(box, 0, 0);
 		list.setScene(listScene);
 		list.show();
-		Scene scene = new Scene(mainGrid,375,250);
+		platform.getChildren().add(menus);
+		platform.getChildren().add(mainGrid);
+		Scene scene = new Scene(platform,400,175);
 		primaryStage.setScene(scene);
 		scene.getStylesheets().add(Applicat.class.getResource
 				("cascadingSheet.css").toExternalForm());
@@ -133,7 +151,7 @@ public class Applicat extends Application {
 		listScene.getStylesheets().add(Applicat.class.getResource
 				("tableStyle.css").toExternalForm());
 		
-		Text sceneTitle = new Text("Login");
+		Text sceneTitle = new Text("Student Login");
 		sceneTitle.setFont(Font.font("Tahoma",FontWeight.NORMAL,32));
 		
 		sceneTitle.setFill(Color.WHITE);
@@ -145,11 +163,7 @@ public class Applicat extends Application {
 		
 		TextField userTextField = new TextField();
 		
-		Label scanning = new Label("Waiting for scan");
-		scanning.setFont(Font.font(16));
-		scanning.setFont(basic);
-		scanning.setTextFill(Color.rgb(144, 161, 127));
-		Button loginButton = new Button("Login");
+		Button loginButton = new Button("Check In/Out");
 		Button signupButton = new Button("Sign up");
 		HBox loginBox = new HBox(10);
 		HBox signupBox = new HBox(10);
@@ -163,16 +177,13 @@ public class Applicat extends Application {
 		
 		mainGrid.add(sceneTitle, 0,0, 2,1);
 		
-		mainGrid.add(userName, 0,1, 2,1);
-		mainGrid.add(userTextField, 2,1, 2,1);
+		mainGrid.add(userName, 0,2, 2,1);
+		mainGrid.add(userTextField, 2,2, 2,1);
 		
-		mainGrid.add(actionText, 3, 4,2,1);
+		mainGrid.add(actionText, 3, 5,2,1);
 		
-		mainGrid.add(scanning, 3, 0,2,1);
-		mainGrid.add(signupBox, 2,3, 1,1);
-		mainGrid.add(loginBox, 3,3, 1,1);
-		transit.setNode(scanning);
-		transit.play();
+		mainGrid.add(signupBox, 4,0, 1,1);
+		mainGrid.add(loginBox,4,2,1,1);
 		
 		userTextField.requestFocus();
 		
@@ -197,9 +208,10 @@ public class Applicat extends Application {
 		    	fade.setNode(actionText);
 		    	fade.setToValue(0);
 		    	fade.setFromValue(1);
-		    	if(userTextField.getText().equals("close"))
+		    	if(userTextField.getText().equals("close")) {
 		    		lib.signOutEveryone(today);
-		    	
+		    		table.refresh();
+		    	}
 		    	try{
 		    		lib.signInOut(Double.parseDouble(userTextField.getText()), today);
 		    		dayFiler.write(today);
