@@ -150,7 +150,7 @@ public class Applicat extends Application {
 				("tableStyle.css").toExternalForm());
 		
 		Text sceneTitle = new Text("Student Login");
-		sceneTitle.setFont(Font.font("Tahoma",FontWeight.NORMAL,32));
+		sceneTitle.setFont(Font.font("Tahoma",FontWeight.NORMAL,26));
 		
 		sceneTitle.setFill(Color.WHITE);
 		
@@ -169,6 +169,9 @@ public class Applicat extends Application {
 		loginBox.getChildren().add(loginButton);
 		signupBox.setAlignment(Pos.BOTTOM_LEFT);
 		signupBox.getChildren().add(signupButton);
+		
+		loginButton.setId("dark-blue");
+		menus.setId("white");
 		
 		final Text actionText = new Text();
 		actionText.setFill(Color.WHITE);	
@@ -264,6 +267,8 @@ public class Applicat extends Application {
 		      HBox cancelBox = new HBox(10);
 		      cancelBox.setAlignment(Pos.BOTTOM_LEFT);
 		      cancelBox.getChildren().add(cancelButton);
+		      
+		      userText.setPromptText("ID Number");
 		      
 		      secondGrid.add(userLabel, 0, 0,2,1);
 		      secondGrid.add(userText, 3, 0,2,1);

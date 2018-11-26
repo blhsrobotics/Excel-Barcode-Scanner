@@ -40,8 +40,8 @@ public class ScannerLibrary {
 	static Cell studentID;
 	static Cell studentNames;
 	static Cell studentHours;
-	static int stringRow = 0;
-	String studentHoursS = "Student Hours";
+	final static int stringRow = 0;
+	final static String studentHoursS = "Student Hours";
     DecimalFormat decFormat = new DecimalFormat("#.##");
 	Day day;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
