@@ -18,7 +18,7 @@ public class XMLFiler {
 		mar = jxaber.createMarshaller();
 		unmar = jxaber.createUnmarshaller();
 		dayLocation = dayLoc;
-		mar.setProperty(mar.JAXB_FORMATTED_OUTPUT, true);
+		mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 	}
 	
 	public void write(Object obj) throws JAXBException {

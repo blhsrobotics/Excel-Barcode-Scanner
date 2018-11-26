@@ -11,7 +11,7 @@ import org.xml.sax.SAXParseException;
 @XmlRootElement(name = "Day")
 public class Day{
 @XmlAttribute(name = "current_Day")
-private static String today;
+private String today;
 @XmlElementWrapper(name = "Students")
 @XmlElement(name = "Student")
 private ArrayList<Student> students = new ArrayList<Student>();

@@ -79,11 +79,9 @@ public class Applicat extends Application {
 			startUp();  
 			basic = Font.font("Tahoma",FontWeight.NORMAL,18);
 		  } catch (EncryptedDocumentException | InvalidFormatException | IOException | JAXBException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		  
 		  transit.setToValue(0);
 		  transit.setCycleCount(Timeline.INDEFINITE);
 		  transit.setDuration(new Duration(1000));
@@ -333,7 +331,6 @@ public class Applicat extends Application {
 		lib = new ScannerLibrary(pathing[3]);
 		lib.onlyKeepPrimarySheet();
 		lib.populate(today.getStudents());
-		xmlDay.students().removeStudent(today.getStudents().get(1));
 		data = FXCollections.observableArrayList(today.getStudents());
 	}
 	

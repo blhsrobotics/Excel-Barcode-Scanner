@@ -1,32 +1,21 @@
 package scanning;
 
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import application.Applicat;
 import excel.WorkBook;
-import javafx.application.Application;
 import xmlfiler.CurrentTime;
 import xmlfiler.Day;
-import xmlfiler.Identifiers;
 import xmlfiler.Student;
 
 /*
@@ -42,21 +31,19 @@ public class ScannerLibrary {
 	static Map<Double,String> studentNumberMap = new HashMap<>();
 	static Map<Integer,Double> rowBarcodeMap = new HashMap<>();
 	File file;
-	String line = "not yet";
 	String sheetName = "Student IDs";
-	Scanner system = new Scanner(System.in);
 	static WorkBook book;
 	Sheet[] sheets;
 	static Sheet primary;
 	final String[] markers = new String[] {
-			"ID'S","NAMES",};
+		"ID'S","NAMES",};
 	static Cell studentID;
 	static Cell studentNames;
 	static Cell studentHours;
 	static int stringRow = 0;
-	static String studentHoursS = "Student Hours";
-	static DecimalFormat decFormat = new DecimalFormat("#.##");
-	static Day day;
+	String studentHoursS = "Student Hours";
+    DecimalFormat decFormat = new DecimalFormat("#.##");
+	Day day;
 	public ScannerLibrary(File path) throws IOException, EncryptedDocumentException, InvalidFormatException {
 		//hasSignedIn();
 		file = path;
@@ -110,7 +97,7 @@ public class ScannerLibrary {
 		}
 		
 	}
-	public static void addCurrentDay() {
+	public void addCurrentDay() {
 		
 		int x = 0;
 		try {
@@ -173,7 +160,7 @@ public class ScannerLibrary {
 		return prim;
 	}
 	
-	public static boolean hasCurrentDay() {
+	public boolean hasCurrentDay() {
 		try{
 			if(book.findDataInRow(CurrentTime.getDay(),stringRow, primary, 100)==null)
 				return false;
