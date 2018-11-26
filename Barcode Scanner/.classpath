@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="lib/Commons Compress - Apache Zipper/commons-compress-1.18-test-sources.jar"/>
 	<classpathentry kind="lib" path="lib/Commons Compress - Apache Zipper/commons-compress-1.18-tests.jar"/>
 	<classpathentry kind="lib" path="lib/Commons Compress - Apache Zipper/commons-compress-1.18.jar"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
