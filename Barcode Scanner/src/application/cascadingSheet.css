@@ -1,10 +1,11 @@
 
 .root{
-	-fx-background-color: linear-gradient(white 2%,#00a2b2 60%, black 100%);
+	-fx-background-color: linear-gradient(white 10%, e6e2e2 70%, white 100%);
+	
 
 }
 
-#dark-blue {
+.dark-blue{
     -fx-background-color: 
         #090a0c,
         linear-gradient(#38424b 0%, #1f2429 20%, #191d22 100%),
@@ -20,6 +21,54 @@
     -fx-padding: 10 20 10 20;
 }
 
-#white {
+#brown {
+	-fx-background-color: #A52A2A;
+}
+
+.backColor{
+	 -fx-background-color: 
+        #A52A2A;
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,0,0,0;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-font-family: "Arial";
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+    -fx-font-size: 14px;
+    -fx-padding: 10 20 10 20;
+}
+.backColor:hover{
+	-fx-background-color:#ae3f3f;
+}
+.backColor:focused{
+	-fx-background-color:#942525;
+}
+.biggerBackColor{
+	 -fx-background-color: 
+        #A52A2A;
+    -fx-background-radius: 5,4,3,5;
+    -fx-background-insets: 0,1,5,0;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-font-family: "Arial";
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+    -fx-font-size: 26px;
+    -fx-padding: 10 20 10 20;
+}
+.biggerBackColor:hover{
+	-fx-background-color:#ae3f3f;
+}
+.biggerBackColor:focused{
+	-fx-background-color: #942525;
+}
+#white{
+	
 	-fx-background-color: white;
+}
+.menuBar{
+	-fx-background-color:#A52A2A;
+}
+
+.menuOptions .label{
+	-fx-text-fill: #A52A2A;
 }

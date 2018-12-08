@@ -252,6 +252,21 @@ public class WorkBook{
 			return null;
 	}
 	
+	public Cell findDataInColumn(double data, int columnNum, Sheet sheet, int search) {
+		cell = checkRowCellCreate(new CellReference(0,columnNum),sheet);
+		int x = 0;
+		while(x<=search) {
+			cell = checkRowCellCreate(new CellReference(x,columnNum),sheet);
+			if(!(cell==null)) {
+				if((checkCellNumeric(new CellReference(cell), sheet))==data) { 
+				return cell;
+				}
+			}
+			x++;
+		}
+			return null;
+	}
+	
 	public void bufferedSetCell(CellReference refer, Sheet sheet, Boolean value) {
 		checkRowCellCreate(refer, sheet);
 		setCell(refer, sheet, value);
@@ -301,5 +316,13 @@ public class WorkBook{
 				book.removeSheetAt(x);
 			}
 		}
+	}
+
+	public void deleteRow(Sheet primary, int rowNum) {
+		primary.removeRow(findRow(rowNum,primary));
+	}
+	
+	public void shiftRows(Sheet primary,int topRow, int bottomRow, int shift) {
+		primary.shiftRows(topRow, bottomRow, shift);
 	}
 }

@@ -37,6 +37,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -73,17 +74,20 @@ public class Applicat extends Application {
 	static XMLFiler dayFiler;
 	static XMLFiler libFiler;
 	static Font basic;
+	static Font title;
 	static ObservableList<Student> data;
 	int windowHeight = 650;
 	int windowWidth = 240;
-	TableView<Student> table;
+	static TableView<Student> table;
 	@Override
 	public void init() {
 		  try {
 			startUp();  
-			basic = Font.font("Tahoma",FontWeight.NORMAL,18);
+			basic = Font.font("Tahoma",FontWeight.NORMAL,32);
+			title = Font.font("Tahoma",FontWeight.SEMI_BOLD,72);
+			
 		  } catch (EncryptedDocumentException | InvalidFormatException | IOException | JAXBException e) {
-			e.printStackTrace();
+			  e.printStackTrace();
 		}
 		
 		  transit.setToValue(0);
@@ -99,19 +103,26 @@ public class Applicat extends Application {
 		MenuBar menus = new MenuBar();
 		Menu tools = new Menu("Tools");
 		MenuItem closeAll = new MenuItem("Close");
+		MenuItem removeStud = new MenuItem("Remove ");
 		closeAll.onActionProperty().set((ActionEvent e)->
 			{lib.signOutEveryone(today);
 			table.refresh();
 			}
 		)
 		;
-		tools.getItems().add(closeAll);
+		removeStud.onActionProperty().set((ActionEvent e)->
+		{
+		removeStudent();	
+		})
+		;
+		
+		tools.getItems().addAll(closeAll, removeStud);
 		menus.getMenus().add(tools);
 		primaryStage.setTitle("Club Sign-in");
 		mainGrid.setAlignment(Pos.TOP_LEFT);
 		mainGrid.setHgap(10);
-		mainGrid.setVgap(10);
-		mainGrid.setPadding(new Insets(25,25,25,25));
+		mainGrid.setVgap(15);
+		mainGrid.setPadding(new Insets(20,25,25,25));
 		listGrid.setAlignment(Pos.CENTER);
 		listGrid.setHgap(0);
 		listGrid.setVgap(0);
@@ -141,7 +152,7 @@ public class Applicat extends Application {
 		list.show();
 		platform.getChildren().add(menus);
 		platform.getChildren().add(mainGrid);
-		Scene scene = new Scene(platform,400,175);
+		Scene scene = new Scene(platform,400,350);
 		primaryStage.setScene(scene);
 		scene.getStylesheets().add(Applicat.class.getResource
 				("cascadingSheet.css").toExternalForm());
@@ -149,44 +160,50 @@ public class Applicat extends Application {
 		listScene.getStylesheets().add(Applicat.class.getResource
 				("tableStyle.css").toExternalForm());
 		
-		Text sceneTitle = new Text("Student Login");
+		Text sceneTitle = new Text("Login");
 		sceneTitle.setFont(Font.font("Tahoma",FontWeight.NORMAL,26));
 		
-		sceneTitle.setFill(Color.WHITE);
+		sceneTitle.setFill(Color.BROWN);
 		
-		Label userName = new Label("ID Number: ");
+		Label userName = new Label("ID:");
 	
-		userName.setTextFill(Color.WHITE);
-		userName.setFont(Font.font("Tahoma",FontWeight.NORMAL,18));
+		userName.setTextFill(Color.BROWN);
+		userName.setFont(basic);
 		
 		TextField userTextField = new TextField();
 		
+		userTextField.setPromptText("Number");
+		userTextField.setFocusTraversable(false);
 		Button loginButton = new Button("Check In/Out");
-		Button signupButton = new Button("Sign up");
+		Button signupButton = new Button("Sign Up");
 		HBox loginBox = new HBox(10);
 		HBox signupBox = new HBox(10);
 		loginBox.setAlignment(Pos.BOTTOM_RIGHT);
 		loginBox.getChildren().add(loginButton);
 		signupBox.setAlignment(Pos.BOTTOM_LEFT);
 		signupBox.getChildren().add(signupButton);
-		
-		loginButton.setId("dark-blue");
-		menus.setId("white");
-		
+		loginButton.getStyleClass().add("biggerBackColor");
+		menus.getStyleClass().add("menuBar");
+		menus.getStyleClass().add("menuOptions");
+		tools.getStyleClass().add("menuColor");
+		signupButton.getStyleClass().add("backColor");
+		tools.setId("white");
 		final Text actionText = new Text();
-		actionText.setFill(Color.WHITE);	
+		actionText.setFill(Color.BROWN);	
+		userName.setFont(basic);
+		userTextField.setFont(basic);
+		sceneTitle.setFont(title);
+		mainGrid.add(sceneTitle, 0,1, 3,1);
 		
-		mainGrid.add(sceneTitle, 0,0, 2,1);
+		mainGrid.add(userName, 0,2, 1,1);
+		mainGrid.add(userTextField, 1,2,2,1);
 		
-		mainGrid.add(userName, 0,2, 2,1);
-		mainGrid.add(userTextField, 2,2, 2,1);
+		//mainGrid.add(actionText, 3, 6,2,1);
 		
-		mainGrid.add(actionText, 3, 5,2,1);
+		mainGrid.add(signupBox, 2,1, 1,1);
+		mainGrid.add(loginBox,1,3,1,1);
 		
-		mainGrid.add(signupBox, 4,0, 1,1);
-		mainGrid.add(loginBox,4,2,1,1);
-		
-		userTextField.requestFocus();
+		sceneTitle.requestFocus();
 		
 		userTextField.setOnKeyPressed(new EventHandler<KeyEvent>() {
 	        @Override
@@ -209,10 +226,8 @@ public class Applicat extends Application {
 		    	fade.setNode(actionText);
 		    	fade.setToValue(0);
 		    	fade.setFromValue(1);
-		    	if(userTextField.getText().equals("close")) {
-		    		lib.signOutEveryone(today);
-		    		table.refresh();
-		    	}
+		    	
+		    	userTextField.requestFocus();
 		    	try{
 		    		lib.signInOut(Double.parseDouble(userTextField.getText()), today);
 		    		dayFiler.write(today);
@@ -236,46 +251,49 @@ public class Applicat extends Application {
 		    public void handle(ActionEvent e) {
 		      Scene addScene;
 		      GridPane secondGrid = new GridPane();
+		      RowConstraints rConstraint = new RowConstraints();
+		      rConstraint.setPrefHeight(100);
+		      rConstraint.setFillHeight(true);
+		      rConstraint.setMaxHeight(100);
+		      secondGrid.getRowConstraints().add(rConstraint);
 		      secondGrid.setAlignment(Pos.CENTER);
 			  secondGrid.setHgap(10);
 			  secondGrid.setVgap(10);
-			  secondGrid.setPadding(new Insets(25,25,25,25));
+			  secondGrid.setPadding(new Insets(10,10,10,10));
 			  addScene = new Scene(secondGrid,350,275);
 		      addScene.getStylesheets().add(Applicat.class.getResource
 					("cascadingSheet.css").toExternalForm());
 		    
 		      TextField userText = new TextField();
 		      userText.setFont(basic);
-		      
 		      TextField numberBox = new TextField();
 		      numberBox.setFont(basic);
-		      
+		      userText.maxHeight(100);
 		      Button continueButton = new Button("Sign up");
 		      HBox continueBox = new HBox(10);
 		      continueBox.setAlignment(Pos.BOTTOM_RIGHT);
 		      continueBox.getChildren().add(continueButton);
-		      
+		      continueButton.getStyleClass().add("biggerBackColor");
 		      Label userLabel = new Label("Name: ");
 		      userLabel.setFont(basic);
-		      userLabel.setTextFill(Color.WHITE);
-		      
-		      Label numLabel =  new Label("Scan card: ");
+		      userLabel.setTextFill(Color.BROWN);
+		   
+		      Label numLabel =  new Label("ID #: ");
 		      numLabel.setFont(basic);
-		      numLabel.setTextFill(Color.WHITE);
+		      numLabel.setTextFill(Color.BROWN);
 		      
 		      Button cancelButton = new Button("Cancel");
-		      HBox cancelBox = new HBox(10);
+		      HBox cancelBox = new HBox(5);
 		      cancelBox.setAlignment(Pos.BOTTOM_LEFT);
 		      cancelBox.getChildren().add(cancelButton);
-		      
-		      userText.setPromptText("ID Number");
-		      
+		      cancelButton.getStyleClass().add("backColor");
+		
 		      secondGrid.add(userLabel, 0, 0,2,1);
 		      secondGrid.add(userText, 3, 0,2,1);
 		      secondGrid.add(numLabel, 0, 1,2,1);
 		      secondGrid.add(numberBox, 3, 1,2,1);
-		      secondGrid.add(continueBox, 3, 2,2,1);
-		      secondGrid.add(cancelBox, 0, 2,2,1);
+		      secondGrid.add(continueBox, 0, 2,2,1);
+		      secondGrid.add(cancelBox, 3, 2,2,1);
 		      primaryStage.setScene(addScene);
 		      continueButton.setOnAction(new EventHandler<ActionEvent>() {
 				    @Override
@@ -284,7 +302,7 @@ public class Applicat extends Application {
 				    	FadeTransition fader = new FadeTransition(new Duration(1300));
 				    	secondGrid.add(pop, 3, 3,2,1);
 				    	pop.setFont(basic);
-				    	pop.setFill(Color.WHITE);
+				    	pop.setFill(Color.BROWN);
 				    	fader.setNode(pop);
 				    	fader.setToValue(0);
 				    	fader.setFromValue(1);
@@ -354,17 +372,46 @@ public class Applicat extends Application {
 	@Override
 	public void stop() throws IOException, JAXBException {
 		if(lib.hasCurrentDay())
-		lib.closeBook(today);
-		else
 			lib.closeBook();
-		libFiler.write(xmlDay.students());
-		dayFiler.write(today);
-		System.out.println("has current day: "+lib.hasCurrentDay());
+		else
+		lib.closeBook();
 		
+		dayFiler.write(today);	
+		libFiler.write(xmlDay.students());
+		System.out.println("has current day: "+lib.hasCurrentDay());
 	}
 	
 	public static void main(String[] args) {
 		new Applicat().launch(args);
 	}
 	
+	public static void removeStudent() {
+		Stage remover = new Stage();
+		VBox box = new VBox();
+		TextField idField = new TextField();
+		idField.setPromptText("ID Number");
+		box.getChildren().add(idField);
+		Scene removerScene = new Scene(box, 100,20);
+		remover.setScene(removerScene);
+		remover.show();
+		idField.setOnAction(new EventHandler<ActionEvent>(){
+		
+			@Override
+			public void handle(ActionEvent s) {
+				try {
+					lib.removeStudent(Double.parseDouble(idField.getText()), today);
+					today.removeStudent(today.findStudent(Double.parseDouble(idField.getText())));
+					xmlDay.students().removeStudent(xmlDay.students().findStudent(Double.parseDouble(idField.getText())));
+					table.refresh();
+					remover.close();
+				}
+				catch(NumberFormatException | NullPointerException e) {
+					e.printStackTrace();
+				}
+			}
+		
+		});
+		
+	}
+
 }

@@ -25,8 +25,8 @@ public class StudentLibrary {
 		if(findStudent(stud.getId())==null)
 						students.add(new Identifiers(stud.getId(),stud.getName()));
 	}
-
-	public void removeStudent(Student stud) {
+	
+	public void removeStudent(Identifiers stud) {
 		students.remove(stud);
 	}
 	
@@ -39,3 +39,4 @@ public class StudentLibrary {
 	}
 	
 }
+

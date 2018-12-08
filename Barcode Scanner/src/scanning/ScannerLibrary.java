@@ -192,6 +192,7 @@ public class ScannerLibrary {
 		CellReference totalHoursRef;
 		CellReference dayHoursRef;
 		for(Student student:today.getStudents()) {
+			System.out.println(student.getId());
 			studentRow = book.findDataInColumn(student.getName(), studentNames.getColumnIndex(), primary, 50).getRowIndex();
 			totalHoursRef = new CellReference(studentRow,hoursColumn);
 			dayHoursRef = new CellReference(studentRow,dateColumn);
@@ -217,7 +218,27 @@ public class ScannerLibrary {
 	
 	public void signOutEveryone(Day today) {
 		for(Student student:today.getStudents()) {
+			if(student.isSignedIn())
 			student.signOut();
+		}
+	}
+	
+	public void removeStudent(double id, Day today) {
+		int row = book.findDataInColumn(today.findStudent(id).getName(),studentNames.getColumnIndex(), primary, 50).getRowIndex();
+		book.deleteRow(primary, row);
+		book.shiftRows(primary,row,lastStudentRow(), -1);
+	}
+	
+	public int lastStudentRow() {
+		int x = stringRow+2;
+		try{
+			while(true) {
+			book.checkCellNumeric(new CellReference(x,studentID.getColumnIndex()), primary);
+			x++;
+			}
+	}
+		catch(NullPointerException e) {
+			return x;	
 		}
 	}
 	

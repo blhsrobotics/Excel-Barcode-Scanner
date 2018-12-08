@@ -26,6 +26,10 @@ private ArrayList<Student> students = new ArrayList<Student>();
 		students.add(stud);
 	}
 	
+	public void removeStudent(Student stud) {
+		students.remove(stud);
+	}
+	
 	public void signIn(Student stud) {
 		try {
 		if(stud.isSignedIn())
